@@ -1,8 +1,73 @@
 import * as p from '@clack/prompts';
 import type { UserAnswers } from './types.js';
 
+async function quickStart(): Promise<UserAnswers> {
+  const projectName = await p.text({
+    message: 'Project name',
+    placeholder: 'my-app',
+    validate: (v) => {
+      if (!v.trim()) return 'Project name is required';
+      if (!/^[a-z0-9-]+$/.test(v)) return 'Use lowercase letters, numbers, and hyphens only';
+    },
+  });
+  if (p.isCancel(projectName)) { p.cancel('Cancelled.'); process.exit(0); }
+
+  const needsBackend = await p.confirm({ message: 'Do you need a backend API?' });
+  if (p.isCancel(needsBackend)) { p.cancel('Cancelled.'); process.exit(0); }
+
+  let needsDatabase = false;
+  if (needsBackend) {
+    const db = await p.confirm({ message: 'Do you need a database?' });
+    if (p.isCancel(db)) { p.cancel('Cancelled.'); process.exit(0); }
+    needsDatabase = db as boolean;
+  }
+
+  const backend = needsBackend ? 'hono' : 'none';
+  const database = needsDatabase ? 'mongodb' : 'none';
+  const apiDeploy = needsBackend ? 'render' : null;
+
+  p.note(
+    [
+      `Frontend  → React + Vite  (deploy: Cloudflare Pages)`,
+      needsBackend ? `Backend   → Node.js / Hono  (deploy: Render)` : '',
+      needsDatabase ? `Database  → MongoDB Atlas` : '',
+    ]
+      .filter(Boolean)
+      .join('\n'),
+    'Quick start stack'
+  );
+
+  return {
+    projectName: projectName as string,
+    frontend: 'react-vite',
+    backend,
+    database,
+    mongodbUri: '',
+    auth: 'none',
+    storage: 'none',
+    jobs: 'none',
+    realtime: 'none',
+    ai: 'none',
+    email: 'none',
+    payments: 'none',
+    webDeploy: 'cloudflare-pages',
+    apiDeploy,
+  } as UserAnswers;
+}
+
 export async function collectAnswers(): Promise<UserAnswers> {
   p.intro('create-vibe-stack — scaffold and deploy in minutes');
+
+  const mode = await p.select({
+    message: 'How do you want to set up your project?',
+    options: [
+      { value: 'quick', label: 'Quick start', hint: 'React + Hono + MongoDB, ready in seconds' },
+      { value: 'custom', label: 'Custom', hint: 'choose every option yourself' },
+    ],
+  });
+  if (p.isCancel(mode)) { p.cancel('Cancelled.'); process.exit(0); }
+
+  if (mode === 'quick') return quickStart();
 
   const answers = await p.group(
     {
