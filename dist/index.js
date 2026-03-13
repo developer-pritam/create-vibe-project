@@ -40,9 +40,19 @@ async function collectAnswers() {
         options: [
           { value: "none", label: "None" },
           { value: "neon", label: "PostgreSQL \u2014 Neon", hint: "serverless postgres, free tier" },
+          { value: "mongodb", label: "MongoDB Atlas", hint: "NoSQL, free tier, paste your connection URL" },
           { value: "firestore", label: "Firestore", hint: "NoSQL, Google, free tier" },
           { value: "upstash-redis", label: "Redis \u2014 Upstash", hint: "serverless redis, free tier" }
         ]
+      }),
+      mongodbUri: ({ results }) => results.database !== "mongodb" ? Promise.resolve("") : p.text({
+        message: "MongoDB connection URL",
+        placeholder: "mongodb+srv://user:pass@cluster0.xxxxx.mongodb.net/mydb",
+        hint: "Get it from MongoDB Atlas \u2192 Connect \u2192 Drivers",
+        validate: (v) => {
+          if (!v.trim()) return "Connection URL is required";
+          if (!v.startsWith("mongodb")) return "Must start with mongodb:// or mongodb+srv://";
+        }
       }),
       auth: () => p.select({
         message: "Authentication",
@@ -145,6 +155,9 @@ var ENV_VAR_MAP = {
     { key: "UPSTASH_REDIS_REST_URL", description: "Upstash Redis REST URL", example: "https://xxx.upstash.io" },
     { key: "UPSTASH_REDIS_REST_TOKEN", description: "Upstash Redis REST token", example: "AXxx..." }
   ],
+  mongodb: [
+    { key: "MONGODB_URI", description: "MongoDB connection string (MongoDB Atlas or self-hosted)", example: "mongodb+srv://user:pass@cluster0.xxxxx.mongodb.net/mydb?retryWrites=true&w=majority" }
+  ],
   clerk: [
     { key: "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY", description: "Clerk publishable key", example: "pk_test_..." },
     { key: "CLERK_SECRET_KEY", description: "Clerk secret key", example: "sk_test_..." }
@@ -211,6 +224,7 @@ var WEB_EXTRA_DEPS_NEXTJS = {
 };
 var API_EXTRA_DEPS = {
   neon: { "@neondatabase/serverless": "^0.10.0", drizzle: "^0.36.0" },
+  mongodb: { mongoose: "^8.0.0" },
   "upstash-redis": { "@upstash/redis": "^1.34.0" },
   "bullmq-upstash": { bullmq: "^5.0.0", "@upstash/redis": "^1.34.0" },
   clerk: { "@clerk/express": "^1.0.0" },
@@ -240,6 +254,10 @@ function collectEnvVars(answers) {
   add(answers.email);
   add(answers.payments);
   if (answers.apiDeploy) add(answers.apiDeploy);
+  if (answers.database === "mongodb" && answers.mongodbUri) {
+    const mongoVar = vars.find((v) => v.key === "MONGODB_URI");
+    if (mongoVar) mongoVar.example = answers.mongodbUri;
+  }
   return vars;
 }
 function collectWebDeps(answers) {
@@ -278,6 +296,7 @@ function buildContext(answers) {
     hasNeon: answers.database === "neon",
     hasFirestore: answers.database === "firestore",
     hasUpstashRedis: answers.database === "upstash-redis",
+    hasMongodb: answers.database === "mongodb",
     hasClerk: answers.auth === "clerk",
     hasFirebaseAuth: answers.auth === "firebase-auth",
     hasSupabaseAuth: answers.auth === "supabase-auth",

@@ -1,6 +1,6 @@
 export type Frontend = 'none' | 'static-html' | 'react-vite' | 'nextjs';
 export type Backend = 'none' | 'hono' | 'fastapi' | 'go';
-export type Database = 'none' | 'neon' | 'firestore' | 'upstash-redis';
+export type Database = 'none' | 'neon' | 'firestore' | 'upstash-redis' | 'mongodb';
 export type Auth = 'none' | 'clerk' | 'firebase-auth' | 'supabase-auth';
 export type Storage = 'none' | 'r2' | 'firebase-storage';
 export type Jobs = 'none' | 'cloud-scheduler' | 'bullmq-upstash';
@@ -16,6 +16,7 @@ export interface UserAnswers {
   frontend: Frontend;
   backend: Backend;
   database: Database;
+  mongodbUri: string;
   auth: Auth;
   storage: Storage;
   jobs: Jobs;
@@ -58,6 +59,7 @@ export interface TemplateFlags {
   hasNeon: boolean;
   hasFirestore: boolean;
   hasUpstashRedis: boolean;
+  hasMongodb: boolean;
   // auth
   hasClerk: boolean;
   hasFirebaseAuth: boolean;

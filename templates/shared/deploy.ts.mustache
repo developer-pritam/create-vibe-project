@@ -3,60 +3,166 @@ import { readFileSync } from 'fs';
 
 const config = JSON.parse(readFileSync('./vibe.config.json', 'utf8'));
 
+// ─── Colours ────────────────────────────────────────────────────────────────
+const c = {
+  red: (s: string) => `\x1b[31m${s}\x1b[0m`,
+  yellow: (s: string) => `\x1b[33m${s}\x1b[0m`,
+  green: (s: string) => `\x1b[32m${s}\x1b[0m`,
+  bold: (s: string) => `\x1b[1m${s}\x1b[0m`,
+  dim: (s: string) => `\x1b[2m${s}\x1b[0m`,
+};
+
 function run(cmd: string, opts: { cwd?: string } = {}): void {
-  console.log(`\n> ${cmd}`);
+  console.log(c.dim(`\n> ${cmd}`));
   execSync(cmd, { stdio: 'inherit', ...opts });
 }
 
+// ─── Pre-flight checks ───────────────────────────────────────────────────────
+interface Check {
+  env?: string;
+  bin?: string;
+  hint: string;
+  link?: string;
+}
+
+const checks: Check[] = [
+  {{#isCloudflarePages}}
+  {
+    env: 'CLOUDFLARE_API_TOKEN',
+    bin: 'wrangler',
+    hint: 'Cloudflare API Token + wrangler CLI are required for Cloudflare Pages deployment.',
+    link: 'Get your API token: https://dash.cloudflare.com/profile/api-tokens  (use "Edit Cloudflare Pages" template)\nInstall wrangler:   npm install -g wrangler && wrangler login',
+  },
+  {{/isCloudflarePages}}
+  {{#isVercel}}
+  {
+    bin: 'vercel',
+    hint: 'Vercel CLI is required.',
+    link: 'Install: npm install -g vercel && vercel login',
+  },
+  {{/isVercel}}
+  {{#isFirebaseHosting}}
+  {
+    bin: 'firebase',
+    hint: 'Firebase CLI is required for Firebase Hosting deployment.',
+    link: 'Install: npm install -g firebase-tools && firebase login',
+  },
+  {{/isFirebaseHosting}}
+  {{#isNetlify}}
+  {
+    bin: 'netlify',
+    hint: 'Netlify CLI is required.',
+    link: 'Install: npm install -g netlify-cli && netlify login',
+  },
+  {{/isNetlify}}
+  {{#isCloudRun}}
+  {
+    env: 'GCP_PROJECT_ID',
+    bin: 'gcloud',
+    hint: 'GCP_PROJECT_ID env var + gcloud CLI are required for Cloud Run deployment.',
+    link: 'Set env var:  export GCP_PROJECT_ID=your-project-id  (add to .env too)\nInstall gcloud: https://cloud.google.com/sdk/docs/install\nThen run:       gcloud auth login && gcloud config set project $GCP_PROJECT_ID\nEnable APIs:    gcloud services enable run.googleapis.com cloudbuild.googleapis.com',
+  },
+  {{/isCloudRun}}
+  {{#isFlyio}}
+  {
+    bin: 'flyctl',
+    hint: 'flyctl CLI is required for Fly.io deployment.',
+    link: 'Install: https://fly.io/docs/flyctl/install/\nThen run: fly auth login',
+  },
+  {{/isFlyio}}
+];
+
+function preflight(): boolean {
+  let ok = true;
+
+  for (const check of checks) {
+    if (check.env && !process.env[check.env]) {
+      console.error(c.red(`\n✘ Missing env var: ${check.env}`));
+      console.error(c.yellow(`  ${check.hint}`));
+      if (check.link) {
+        check.link.split('\n').forEach((line) => console.error(c.dim(`  ${line}`)));
+      }
+      ok = false;
+    }
+
+    if (check.bin) {
+      try {
+        execSync(`which ${check.bin}`, { stdio: 'ignore' });
+      } catch {
+        console.error(c.red(`\n✘ Missing CLI tool: ${check.bin}`));
+        console.error(c.yellow(`  ${check.hint}`));
+        if (check.link) {
+          check.link.split('\n').forEach((line) => console.error(c.dim(`  ${line}`)));
+        }
+        ok = false;
+      }
+    }
+  }
+
+  return ok;
+}
+
+// ─── Deploy ──────────────────────────────────────────────────────────────────
+
+{{#hasWeb}}
 async function deployWeb(): Promise<void> {
-  console.log('\nBuilding frontend...');
+  console.log(c.bold('\nBuilding frontend...'));
   run('npm run build:web');
 
   {{#isCloudflarePages}}
-  console.log('\nDeploying to Cloudflare Pages...');
+  console.log(c.bold('\nDeploying to Cloudflare Pages...'));
   run(`npx wrangler pages deploy apps/web/dist --project-name ${config.projectName}`);
   {{/isCloudflarePages}}
 
   {{#isVercel}}
-  console.log('\nDeploying to Vercel...');
+  console.log(c.bold('\nDeploying to Vercel...'));
   run('npx vercel --prod', { cwd: 'apps/web' });
   {{/isVercel}}
 
   {{#isFirebaseHosting}}
-  console.log('\nDeploying to Firebase Hosting...');
+  console.log(c.bold('\nDeploying to Firebase Hosting...'));
   run('npx firebase deploy --only hosting');
   {{/isFirebaseHosting}}
 
   {{#isNetlify}}
-  console.log('\nDeploying to Netlify...');
+  console.log(c.bold('\nDeploying to Netlify...'));
   run('npx netlify-cli deploy --prod --dir dist', { cwd: 'apps/web' });
   {{/isNetlify}}
 }
+{{/hasWeb}}
 
+{{#hasApi}}
 async function deployApi(): Promise<void> {
   {{#isCloudRun}}
-  console.log('\nDeploying to Google Cloud Run...');
-  const project = process.env.GCP_PROJECT_ID;
+  console.log(c.bold('\nDeploying to Google Cloud Run...'));
+  const project = process.env.GCP_PROJECT_ID!;
   const region = process.env.GCP_REGION ?? 'us-central1';
-  if (!project) {
-    console.error('GCP_PROJECT_ID env var is required for Cloud Run deployment.');
-    process.exit(1);
-  }
   run(`gcloud run deploy ${config.projectName}-api --source apps/api --region ${region} --project ${project} --allow-unauthenticated`);
   {{/isCloudRun}}
 
   {{#isFlyio}}
-  console.log('\nDeploying to Fly.io...');
+  console.log(c.bold('\nDeploying to Fly.io...'));
   run('flyctl deploy --remote-only', { cwd: 'apps/api' });
   {{/isFlyio}}
 
   {{#isRender}}
-  console.log('\nRender: push to main to trigger automatic deployment.');
-  console.log('Connect your repo at https://dashboard.render.com');
+  console.log(c.yellow('\nRender deploys automatically on push to main.'));
+  console.log(c.dim('  Connect your repo at https://dashboard.render.com'));
+  console.log(c.dim('  → New → Web Service → select your repo → set root directory to apps/api'));
   {{/isRender}}
 }
+{{/hasApi}}
+
+// ─── Main ────────────────────────────────────────────────────────────────────
 
 (async () => {
+  console.log(c.bold(`\nDeploying ${config.projectName}...`));
+
+  if (!preflight()) {
+    console.error(c.red('\n✘ Fix the issues above and run npm run deploy again.\n'));
+    process.exit(1);
+  }
+
   try {
     {{#hasWeb}}
     await deployWeb();
@@ -64,9 +170,9 @@ async function deployApi(): Promise<void> {
     {{#hasApi}}
     await deployApi();
     {{/hasApi}}
-    console.log('\nDeploy complete!');
+    console.log(c.green('\n✔ Deploy complete!\n'));
   } catch (err) {
-    console.error('\nDeploy failed:', err);
+    console.error(c.red('\n✘ Deploy failed:'), err);
     process.exit(1);
   }
 })();

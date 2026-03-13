@@ -44,10 +44,24 @@ export async function collectAnswers(): Promise<UserAnswers> {
           options: [
             { value: 'none', label: 'None' },
             { value: 'neon', label: 'PostgreSQL — Neon', hint: 'serverless postgres, free tier' },
+            { value: 'mongodb', label: 'MongoDB Atlas', hint: 'NoSQL, free tier, paste your connection URL' },
             { value: 'firestore', label: 'Firestore', hint: 'NoSQL, Google, free tier' },
             { value: 'upstash-redis', label: 'Redis — Upstash', hint: 'serverless redis, free tier' },
           ],
         }),
+
+      mongodbUri: ({ results }) =>
+        results.database !== 'mongodb'
+          ? (Promise.resolve('') as Promise<string>)
+          : p.text({
+              message: 'MongoDB connection URL',
+              placeholder: 'mongodb+srv://user:pass@cluster0.xxxxx.mongodb.net/mydb',
+              hint: 'Get it from MongoDB Atlas → Connect → Drivers',
+              validate: (v) => {
+                if (!v.trim()) return 'Connection URL is required';
+                if (!v.startsWith('mongodb')) return 'Must start with mongodb:// or mongodb+srv://';
+              },
+            }),
 
       auth: () =>
         p.select({

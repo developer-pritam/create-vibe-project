@@ -13,6 +13,9 @@ const ENV_VAR_MAP: Partial<Record<string, EnvVar[]>> = {
     { key: 'UPSTASH_REDIS_REST_URL', description: 'Upstash Redis REST URL', example: 'https://xxx.upstash.io' },
     { key: 'UPSTASH_REDIS_REST_TOKEN', description: 'Upstash Redis REST token', example: 'AXxx...' },
   ],
+  mongodb: [
+    { key: 'MONGODB_URI', description: 'MongoDB connection string (MongoDB Atlas or self-hosted)', example: 'mongodb+srv://user:pass@cluster0.xxxxx.mongodb.net/mydb?retryWrites=true&w=majority' },
+  ],
   clerk: [
     { key: 'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY', description: 'Clerk publishable key', example: 'pk_test_...' },
     { key: 'CLERK_SECRET_KEY', description: 'Clerk secret key', example: 'sk_test_...' },
@@ -82,6 +85,7 @@ const WEB_EXTRA_DEPS_NEXTJS: Partial<Record<string, Record<string, string>>> = {
 
 const API_EXTRA_DEPS: Partial<Record<string, Record<string, string>>> = {
   neon: { '@neondatabase/serverless': '^0.10.0', drizzle: '^0.36.0' },
+  mongodb: { mongoose: '^8.0.0' },
   'upstash-redis': { '@upstash/redis': '^1.34.0' },
   'bullmq-upstash': { bullmq: '^5.0.0', '@upstash/redis': '^1.34.0' },
   clerk: { '@clerk/express': '^1.0.0' },
@@ -114,6 +118,12 @@ function collectEnvVars(answers: UserAnswers): EnvVar[] {
   add(answers.email);
   add(answers.payments);
   if (answers.apiDeploy) add(answers.apiDeploy);
+
+  // Fill in the actual MongoDB URI the user entered
+  if (answers.database === 'mongodb' && answers.mongodbUri) {
+    const mongoVar = vars.find((v) => v.key === 'MONGODB_URI');
+    if (mongoVar) mongoVar.example = answers.mongodbUri;
+  }
 
   return vars;
 }
@@ -161,6 +171,7 @@ export function buildContext(answers: UserAnswers): ScaffoldContext {
     hasNeon: answers.database === 'neon',
     hasFirestore: answers.database === 'firestore',
     hasUpstashRedis: answers.database === 'upstash-redis',
+    hasMongodb: answers.database === 'mongodb',
     hasClerk: answers.auth === 'clerk',
     hasFirebaseAuth: answers.auth === 'firebase-auth',
     hasSupabaseAuth: answers.auth === 'supabase-auth',

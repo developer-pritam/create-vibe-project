@@ -5,6 +5,9 @@ import { serve } from '@hono/node-server';
 {{#hasNeon}}
 import { neon } from '@neondatabase/serverless';
 {{/hasNeon}}
+{{#hasMongodb}}
+import mongoose from 'mongoose';
+{{/hasMongodb}}
 {{#hasUpstashRedis}}
 import { Redis } from '@upstash/redis';
 {{/hasUpstashRedis}}
@@ -32,6 +35,9 @@ app.use(
 {{#hasNeon}}
 const sql = neon(process.env.DATABASE_URL!);
 {{/hasNeon}}
+{{#hasMongodb}}
+mongoose.connect(process.env.MONGODB_URI!).then(() => console.log('MongoDB connected'));
+{{/hasMongodb}}
 {{#hasUpstashRedis}}
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL!,
@@ -58,6 +64,14 @@ app.get('/api/items', async (c) => {
   return c.json(rows);
 });
 {{/hasNeon}}
+
+{{#hasMongodb}}
+// Example MongoDB route — replace with your own model
+app.get('/api/items', async (c) => {
+  // const items = await YourModel.find();
+  return c.json({ message: 'MongoDB connected. Define your Mongoose models in src/models/' });
+});
+{{/hasMongodb}}
 
 {{#hasStripe}}
 // Stripe checkout session
