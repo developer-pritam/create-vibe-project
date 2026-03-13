@@ -4,7 +4,7 @@
   "description": "Scaffold and deploy full-stack projects with one command",
   "type": "module",
   "bin": {
-    "create-vibe-project": "./dist/index.js"
+    "create-vibe-project": "dist/index.js"
   },
   "files": [
     "dist",
