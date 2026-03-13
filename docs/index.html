@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>create-vibe-project — Scaffold full-stack apps in 60 seconds</title>
+  <meta name="description" content="Answer 13 questions. Get a full-stack project with npm run dev and npm run deploy already wired. React, Next.js, Hono, FastAPI, Neon, MongoDB, Clerk, Stripe and more." />
+  <meta property="og:title" content="create-vibe-project" />
+  <meta property="og:description" content="Scaffold full-stack apps in 60 seconds. npm run dev + npm run deploy pre-configured." />
+  <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Variables ─────────────────────────────────────────────────── */
+    :root {
+      --bg:         #0a0a0f;
+      --surface:    #13131a;
+      --surface2:   #1a1a24;
+      --border:     #1e1e2e;
+      --primary:    #7c3aed;
+      --primary-dim: rgba(124,58,237,0.15);
+      --cyan:       #06b6d4;
+      --text:       #f1f5f9;
+      --text2:      #94a3b8;
+      --text3:      #475569;
+      --green:      #10b981;
+      --term-bg:    #0d1117;
+      --term-green: #3fb950;
+      --r: 12px;
+    }
+
+    /* ── Reset ─────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    code, pre { font-family: 'JetBrains Mono', monospace; }
+
+    /* ── Nav ───────────────────────────────────────────────────────── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem; height: 60px;
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-weight: 700; font-size: 1rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; }
+    .nav-logo span { color: var(--primary); }
+    .nav-links { display: flex; align-items: center; gap: 1.5rem; }
+    .nav-links a { font-size: 0.875rem; color: var(--text2); transition: color .2s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-badge {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.3rem 0.75rem; border-radius: 99px;
+      background: var(--surface); border: 1px solid var(--border);
+      font-size: 0.8rem; font-weight: 500; color: var(--text2);
+      transition: border-color .2s, color .2s;
+    }
+    .nav-badge:hover { border-color: var(--primary); color: var(--text); }
+
+    /* ── Hero ──────────────────────────────────────────────────────── */
+    #hero {
+      position: relative;
+      min-height: 88vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center;
+      padding: 6rem 1.5rem 4rem;
+      overflow: hidden;
+    }
+    .hero-glow {
+      position: absolute; inset: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 60% 40% at 20% 50%, rgba(124,58,237,0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 35% at 80% 30%, rgba(6,182,212,0.08) 0%, transparent 70%);
+      animation: glow-shift 8s ease-in-out infinite alternate;
+    }
+    @keyframes glow-shift {
+      from { opacity: 0.8; transform: scale(1); }
+      to   { opacity: 1;   transform: scale(1.05); }
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.35rem 0.9rem; border-radius: 99px;
+      background: var(--primary-dim); border: 1px solid rgba(124,58,237,0.4);
+      font-size: 0.8rem; font-weight: 500; color: #a78bfa;
+      margin-bottom: 1.5rem;
+    }
+    .hero-badge::before { content: '✦'; font-size: 0.7rem; }
+    h1 {
+      font-size: clamp(2.2rem, 6vw, 4rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 1.25rem;
+      max-width: 800px;
+    }
+    h1 .accent { color: var(--primary); }
+    .hero-sub {
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      color: var(--text2);
+      max-width: 560px;
+      margin-bottom: 2.5rem;
+    }
+    .hero-cmd {
+      display: flex; align-items: center; gap: 0;
+      background: var(--term-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem;
+      margin-bottom: 2.5rem;
+    }
+    .hero-cmd-text {
+      padding: 0.85rem 1.25rem;
+      color: var(--term-green);
+    }
+    .hero-cmd-text::before { content: '$ '; color: var(--text3); }
+    .copy-btn {
+      padding: 0.85rem 1.25rem;
+      background: var(--surface); border: none; border-left: 1px solid var(--border);
+      color: var(--text2); cursor: pointer; font-size: 0.85rem;
+      transition: background .2s, color .2s; white-space: nowrap;
+    }
+    .copy-btn:hover { background: var(--surface2); color: var(--text); }
+    .copy-btn.copied { color: var(--green); }
+    .hero-stats {
+      display: flex; gap: 2.5rem; flex-wrap: wrap; justify-content: center;
+      color: var(--text2); font-size: 0.875rem;
+    }
+    .hero-stats span { display: flex; align-items: center; gap: 0.4rem; }
+    .hero-stats strong { color: var(--text); }
+
+    /* ── Terminal preview ──────────────────────────────────────────── */
+    .terminal-wrap { position: relative; width: 100%; max-width: 620px; margin: 3rem auto 0; }
+    .terminal {
+      background: var(--term-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+      text-align: left;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(124,58,237,0.1);
+    }
+    .term-bar {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      background: #161622; border-bottom: 1px solid var(--border);
+    }
+    .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #ffbd2e; }
+    .dot-g { background: #28ca41; }
+    .term-title { flex: 1; text-align: center; font-size: 0.75rem; color: var(--text3); }
+    .term-body { padding: 1.25rem 1.5rem; font-size: 0.82rem; line-height: 1.9; }
+    .term-line { display: flex; gap: 0.75rem; }
+    .t-prompt { color: var(--primary); user-select: none; }
+    .t-cmd { color: var(--text); }
+    .t-q { color: var(--cyan); }
+    .t-v { color: var(--term-green); }
+    .t-dim { color: var(--text3); }
+    .t-success { color: var(--green); }
+    .cursor { display: inline-block; width: 8px; height: 14px; background: var(--text); vertical-align: middle; animation: blink 1s step-end infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* ── Sections ──────────────────────────────────────────────────── */
+    section { padding: 5rem 1.5rem; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .section-label {
+      display: inline-block;
+      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--primary);
+      margin-bottom: 0.75rem;
+    }
+    h2 {
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 800; letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+    .section-sub { color: var(--text2); font-size: 1.05rem; max-width: 520px; margin-bottom: 3rem; }
+
+    /* ── Steps ─────────────────────────────────────────────────────── */
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
+    .step-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 1.75rem;
+      transition: border-color .2s, transform .2s;
+    }
+    .step-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+    .step-num {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--primary-dim); border: 1px solid rgba(124,58,237,0.4);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; font-weight: 700; color: #a78bfa;
+      margin-bottom: 1rem;
+    }
+    .step-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .step-card p { font-size: 0.9rem; color: var(--text2); }
+    .step-code {
+      display: inline-block; margin-top: 0.75rem;
+      background: var(--term-bg); border: 1px solid var(--border);
+      border-radius: 6px; padding: 0.35rem 0.75rem;
+      font-size: 0.82rem; color: var(--term-green);
+    }
+
+    /* ── Stack tabs ────────────────────────────────────────────────── */
+    .tabs-wrap { width: 100%; }
+    .tab-buttons {
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+      margin-bottom: 1.75rem;
+    }
+    .tab-btn {
+      padding: 0.45rem 1rem; border-radius: 99px;
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--text2); font-size: 0.85rem; font-weight: 500;
+      cursor: pointer; transition: all .2s;
+    }
+    .tab-btn:hover { border-color: var(--primary); color: var(--text); }
+    .tab-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+    .option-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 1.25rem;
+      transition: border-color .2s, transform .2s;
+    }
+    .option-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+    .option-icon {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: var(--primary-dim); border: 1px solid rgba(124,58,237,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; margin-bottom: 0.75rem;
+    }
+    .option-card h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.3rem; }
+    .option-card p { font-size: 0.8rem; color: var(--text2); }
+    .option-card .tag {
+      display: inline-block; margin-top: 0.5rem;
+      font-size: 0.7rem; font-weight: 600; padding: 0.15rem 0.5rem;
+      border-radius: 99px; background: rgba(16,185,129,0.1);
+      border: 1px solid rgba(16,185,129,0.3); color: var(--green);
+    }
+
+    /* ── Project structure ─────────────────────────────────────────── */
+    #structure { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .file-tree {
+      background: var(--term-bg); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 1.5rem;
+      font-size: 0.85rem; line-height: 2; color: var(--text2);
+      overflow-x: auto;
+    }
+    .file-tree .dir { color: var(--cyan); font-weight: 600; }
+    .file-tree .file { color: var(--text2); }
+    .file-tree .comment { color: var(--text3); font-style: italic; }
+    .structure-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
+    @media (max-width: 680px) { .structure-grid { grid-template-columns: 1fr; } }
+    .scripts-list { display: flex; flex-direction: column; gap: 1rem; }
+    .script-item {
+      background: var(--term-bg); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 1rem 1.25rem;
+    }
+    .script-item code { color: var(--term-green); font-size: 0.9rem; }
+    .script-item p { font-size: 0.85rem; color: var(--text2); margin-top: 0.25rem; }
+
+    /* ── AI Helper ─────────────────────────────────────────────────── */
+    #ai-helper { background: var(--bg); }
+    .ai-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 2rem;
+      max-width: 720px; margin: 0 auto;
+      box-shadow: 0 0 60px rgba(124,58,237,0.08);
+    }
+    .ai-card h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .ai-card > p { font-size: 0.9rem; color: var(--text2); margin-bottom: 1.5rem; }
+    .ai-textarea {
+      width: 100%; min-height: 120px;
+      background: var(--term-bg); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1rem;
+      color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.95rem;
+      resize: vertical; outline: none; transition: border-color .2s;
+    }
+    .ai-textarea:focus { border-color: var(--primary); }
+    .ai-textarea::placeholder { color: var(--text3); }
+    .ai-label { font-size: 0.8rem; font-weight: 600; color: var(--text2); margin: 1.25rem 0 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .ai-buttons { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .ai-btn {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.65rem 1.25rem; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--surface2);
+      color: var(--text); font-size: 0.9rem; font-weight: 500;
+      cursor: pointer; transition: all .2s; flex: 1; min-width: 140px; justify-content: center;
+    }
+    .ai-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+    .ai-btn-claude:hover { border-color: #d97706; background: rgba(217,119,6,0.08); }
+    .ai-btn-chatgpt:hover { border-color: #10a37f; background: rgba(16,163,127,0.08); }
+    .ai-btn-gemini:hover { border-color: #4285f4; background: rgba(66,133,244,0.08); }
+    .ai-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+    .ai-note { font-size: 0.78rem; color: var(--text3); margin-top: 1rem; }
+
+    /* ── Toast ─────────────────────────────────────────────────────── */
+    #toast {
+      position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 99px; padding: 0.65rem 1.5rem;
+      font-size: 0.875rem; color: var(--text);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      opacity: 0; pointer-events: none;
+      transition: opacity .3s;
+      z-index: 1000; white-space: nowrap;
+    }
+    #toast.show { opacity: 1; }
+
+    /* ── Copy modal ────────────────────────────────────────────────── */
+    dialog {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r); color: var(--text);
+      padding: 1.5rem; max-width: 560px; width: 90%;
+    }
+    dialog::backdrop { background: rgba(0,0,0,0.7); }
+    dialog h4 { margin-bottom: 1rem; }
+    dialog pre {
+      background: var(--term-bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 1rem; font-size: 0.75rem;
+      max-height: 240px; overflow-y: auto; color: var(--text2);
+      white-space: pre-wrap; word-break: break-word;
+      margin-bottom: 1rem;
+    }
+    .dialog-actions { display: flex; gap: 0.75rem; justify-content: flex-end; }
+    .btn-primary {
+      padding: 0.55rem 1.25rem; border-radius: 8px;
+      background: var(--primary); border: none; color: #fff;
+      font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: opacity .2s;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-ghost {
+      padding: 0.55rem 1.25rem; border-radius: 8px;
+      background: transparent; border: 1px solid var(--border); color: var(--text2);
+      font-size: 0.9rem; cursor: pointer; transition: border-color .2s;
+    }
+    .btn-ghost:hover { border-color: var(--text2); }
+
+    /* ── Footer ────────────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 1.5rem;
+      text-align: center; color: var(--text3); font-size: 0.875rem;
+    }
+    footer a { color: var(--text2); transition: color .2s; }
+    footer a:hover { color: var(--text); }
+    footer .footer-links { display: flex; gap: 1.5rem; justify-content: center; margin-bottom: 0.75rem; flex-wrap: wrap; }
+
+    /* ── Misc ──────────────────────────────────────────────────────── */
+    .divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+    @media (max-width: 600px) {
+      .hero-stats { gap: 1.25rem; }
+      .ai-btn { min-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Nav ─────────────────────────────────────────────────────────── -->
+<nav>
+  <div class="nav-logo">
+    <span>⬡</span> create-vibe-project
+  </div>
+  <div class="nav-links">
+    <a href="#how-it-works">How it works</a>
+    <a href="#stack">Stack</a>
+    <a href="#ai-helper">AI Helper</a>
+    <a href="https://github.com/developer-pritam/create-vibe-project" target="_blank" class="nav-badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+      GitHub
+    </a>
+  </div>
+</nav>
+
+<!-- ── Hero ────────────────────────────────────────────────────────── -->
+<section id="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-badge">Open source CLI tool</div>
+  <h1>Scaffold your full-stack app<br/><span class="accent">in 60 seconds</span></h1>
+  <p class="hero-sub">Answer 13 questions. Get a complete project with <code>npm run dev</code> and <code>npm run deploy</code> already wired — React, Next.js, Hono, FastAPI, MongoDB, Stripe and more.</p>
+
+  <div class="hero-cmd">
+    <span class="hero-cmd-text">npx create-vibe-project</span>
+    <button class="copy-btn" id="copy-cmd" onclick="copyCmd()">Copy</button>
+  </div>
+
+  <div class="hero-stats">
+    <span><strong>13</strong> questions</span>
+    <span><strong>4</strong> frontends</span>
+    <span><strong>4</strong> backends</span>
+    <span><strong>6</strong> deploy targets</span>
+  </div>
+
+  <div class="terminal-wrap">
+    <div class="terminal">
+      <div class="term-bar">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+        <span class="term-title">Terminal</span>
+      </div>
+      <div class="term-body">
+        <div class="term-line"><span class="t-prompt">$</span><span class="t-cmd">npx create-vibe-project</span></div>
+        <div class="term-line"><span class="t-dim">┌ create-vibe-project — scaffold and deploy in minutes</span></div>
+        <div class="term-line"><span class="t-q">◆ Project name</span></div>
+        <div class="term-line"><span class="t-dim">│ </span><span class="t-v">my-app</span></div>
+        <div class="term-line"><span class="t-q">◆ Frontend</span></div>
+        <div class="term-line"><span class="t-dim">│ </span><span class="t-v">React + Vite</span></div>
+        <div class="term-line"><span class="t-q">◆ Backend API</span></div>
+        <div class="term-line"><span class="t-dim">│ </span><span class="t-v">Node.js — Hono</span></div>
+        <div class="term-line"><span class="t-q">◆ Database</span></div>
+        <div class="term-line"><span class="t-dim">│ </span><span class="t-v">MongoDB Atlas</span></div>
+        <div class="term-line"><span class="t-dim">│ ...</span></div>
+        <div class="term-line"><span class="t-success">◇ Project scaffolded!</span></div>
+        <div class="term-line"><span class="t-dim">└ Happy shipping! 🚀</span> <span class="cursor"></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- ── How it works ─────────────────────────────────────────────────── -->
+<section id="how-it-works">
+  <div class="container">
+    <span class="section-label">Simple by design</span>
+    <h2>Three steps to a working project</h2>
+    <p class="section-sub">No config files to copy-paste. No tutorials to follow. Just answer questions and start building.</p>
+    <div class="steps">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <h3>Run one command</h3>
+        <p>No global install needed. npx downloads and runs the latest version automatically.</p>
+        <code class="step-code">npx create-vibe-project</code>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <h3>Answer 13 questions</h3>
+        <p>Frontend, backend, database, auth, storage, AI, payments, deploy targets — all in one interactive flow.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <h3>Start building</h3>
+        <p>Install deps, fill in .env, and you're live locally. One more command to deploy to production.</p>
+        <code class="step-code">npm install && npm run dev</code>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- ── Stack ────────────────────────────────────────────────────────── -->
+<section id="stack">
+  <div class="container">
+    <span class="section-label">Every choice pre-wired</span>
+    <h2>Pick your stack</h2>
+    <p class="section-sub">Imports, boilerplate, and config are generated automatically based on your selections.</p>
+
+    <div class="tabs-wrap">
+      <div class="tab-buttons">
+        <button class="tab-btn active" onclick="switchTab('frontend', this)">Frontend</button>
+        <button class="tab-btn" onclick="switchTab('backend', this)">Backend</button>
+        <button class="tab-btn" onclick="switchTab('database', this)">Database</button>
+        <button class="tab-btn" onclick="switchTab('auth', this)">Auth</button>
+        <button class="tab-btn" onclick="switchTab('storage', this)">Storage</button>
+        <button class="tab-btn" onclick="switchTab('jobs', this)">Jobs</button>
+        <button class="tab-btn" onclick="switchTab('ai', this)">AI</button>
+        <button class="tab-btn" onclick="switchTab('deploy', this)">Deploy</button>
+      </div>
+
+      <div id="tab-frontend" class="tab-panel active">
+        <div class="option-card"><div class="option-icon">⚛</div><h4>React + Vite</h4><p>Fast HMR, TypeScript, auto-proxies /api to backend</p><span class="tag">recommended</span></div>
+        <div class="option-card"><div class="option-icon">▲</div><h4>Next.js</h4><p>SSR, app router, great for SEO-heavy or full-stack apps</p></div>
+        <div class="option-card"><div class="option-icon">☰</div><h4>Static HTML</h4><p>Plain HTML/CSS/JS, no framework, served with npx serve</p></div>
+        <div class="option-card"><div class="option-icon">○</div><h4>None</h4><p>API only — no frontend scaffolded</p></div>
+      </div>
+
+      <div id="tab-backend" class="tab-panel">
+        <div class="option-card"><div class="option-icon">⬡</div><h4>Hono (Node.js)</h4><p>Lightweight, TypeScript, ultra-fast. CORS + logger pre-configured</p><span class="tag">recommended</span></div>
+        <div class="option-card"><div class="option-icon">🐍</div><h4>FastAPI (Python)</h4><p>Async, great for AI/ML workloads, auto OpenAPI docs</p></div>
+        <div class="option-card"><div class="option-icon">Go</div><h4>Go</h4><p>Standard library, high performance, minimal footprint</p></div>
+        <div class="option-card"><div class="option-icon">○</div><h4>None</h4><p>Frontend only — no backend scaffolded</p></div>
+      </div>
+
+      <div id="tab-database" class="tab-panel">
+        <div class="option-card"><div class="option-icon">🐘</div><h4>Neon (PostgreSQL)</h4><p>Serverless Postgres, free tier, scales to zero</p><span class="tag">free tier</span></div>
+        <div class="option-card"><div class="option-icon">🍃</div><h4>MongoDB Atlas</h4><p>NoSQL, paste your connection URL, free 512MB cluster</p><span class="tag">free tier</span></div>
+        <div class="option-card"><div class="option-icon">🔥</div><h4>Firestore</h4><p>Google NoSQL, real-time, generous free tier</p><span class="tag">free tier</span></div>
+        <div class="option-card"><div class="option-icon">⚡</div><h4>Upstash Redis</h4><p>Serverless Redis, great for caching and queues</p><span class="tag">free tier</span></div>
+      </div>
+
+      <div id="tab-auth" class="tab-panel">
+        <div class="option-card"><div class="option-icon">🔐</div><h4>Clerk</h4><p>Pre-built UI components, 10k MAU free, easiest setup</p><span class="tag">free tier</span></div>
+        <div class="option-card"><div class="option-icon">🔥</div><h4>Firebase Auth</h4><p>Email, Google, GitHub login. Generous free tier</p><span class="tag">free tier</span></div>
+        <div class="option-card"><div class="option-icon">⚡</div><h4>Supabase Auth</h4><p>Open source, works great with Supabase DB</p><span class="tag">free tier</span></div>
+        <div class="option-card"><div class="option-icon">○</div><h4>None</h4><p>No auth — implement your own or add it later</p></div>
+      </div>
+
+      <div id="tab-storage" class="tab-panel">
+        <div class="option-card"><div class="option-icon">☁</div><h4>Cloudflare R2</h4><p>S3-compatible, zero egress fees, global CDN</p><span class="tag">free tier</span></div>
+        <div class="option-card"><div class="option-icon">🔥</div><h4>Firebase Storage</h4><p>Simple SDK, integrates with Firebase Auth</p><span class="tag">free tier</span></div>
+        <div class="option-card"><div class="option-icon">○</div><h4>None</h4><p>No file storage</p></div>
+      </div>
+
+      <div id="tab-jobs" class="tab-panel">
+        <div class="option-card"><div class="option-icon">⏰</div><h4>Cloud Scheduler</h4><p>GCP cron jobs that trigger Cloud Run — scheduled tasks</p></div>
+        <div class="option-card"><div class="option-icon">📬</div><h4>BullMQ + Upstash</h4><p>Job queues backed by Upstash Redis, free tier</p><span class="tag">free tier</span></div>
+        <div class="option-card"><div class="option-icon">○</div><h4>None</h4><p>No background jobs</p></div>
+      </div>
+
+      <div id="tab-ai" class="tab-panel">
+        <div class="option-card"><div class="option-icon">✦</div><h4>LLM API</h4><p>Anthropic Claude SDK wired, POST /api/chat ready to use</p></div>
+        <div class="option-card"><div class="option-icon">🔍</div><h4>Vector / RAG</h4><p>Claude + Pinecone embeddings and vector search pipeline</p></div>
+        <div class="option-card"><div class="option-icon">○</div><h4>None</h4><p>No AI features</p></div>
+      </div>
+
+      <div id="tab-deploy" class="tab-panel">
+        <div class="option-card"><div class="option-icon">☁</div><h4>Cloudflare Pages</h4><p>Global edge, unlimited bandwidth, fast deploys</p><span class="tag">free tier</span></div>
+        <div class="option-card"><div class="option-icon">▲</div><h4>Vercel</h4><p>Best for Next.js, great DX, free hobby tier</p><span class="tag">free tier</span></div>
+        <div class="option-card"><div class="option-icon">🔥</div><h4>Firebase Hosting</h4><p>Google CDN, good if already using Firebase</p><span class="tag">free tier</span></div>
+        <div class="option-card"><div class="option-icon">◈</div><h4>Netlify</h4><p>Simple deploys, generous free tier</p><span class="tag">free tier</span></div>
+        <div class="option-card"><div class="option-icon">G</div><h4>Cloud Run</h4><p>Backend — scales to zero, pay per request</p></div>
+        <div class="option-card"><div class="option-icon">R</div><h4>Render</h4><p>Backend — simple setup, free tier (sleeps on inactivity)</p><span class="tag">free tier</span></div>
+        <div class="option-card"><div class="option-icon">🪰</div><h4>Fly.io</h4><p>Backend — global, 3 shared VMs free, no cold starts</p><span class="tag">free tier</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- ── Structure ───────────────────────────────────────────────────── -->
+<section id="structure">
+  <div class="container">
+    <span class="section-label">What you get</span>
+    <h2>Everything wired, nothing missing</h2>
+    <p class="section-sub">The generated project is a production-ready monorepo — not a starter template you have to gut and rebuild.</p>
+    <div class="structure-grid">
+      <div class="file-tree">
+<span class="dir">my-app/</span>
+├── <span class="dir">apps/</span>
+│   ├── <span class="dir">web/</span>           <span class="comment"># frontend</span>
+│   │   ├── <span class="dir">src/</span>
+│   │   └── <span class="file">vite.config.ts</span> <span class="comment"># /api proxy</span>
+│   └── <span class="dir">api/</span>           <span class="comment"># backend</span>
+│       ├── <span class="dir">src/index.ts</span>
+│       └── <span class="file">Dockerfile</span>
+├── <span class="dir">.github/workflows/</span>
+│   └── <span class="file">deploy.yml</span>    <span class="comment"># CI/CD</span>
+├── <span class="dir">scripts/</span>
+│   └── <span class="file">deploy.ts</span>     <span class="comment"># deploy logic</span>
+├── <span class="file">.env.example</span>      <span class="comment"># all vars listed</span>
+├── <span class="file">vibe.config.json</span>  <span class="comment"># your stack</span>
+├── <span class="file">README.md</span>
+├── <span class="file">TROUBLESHOOTING.md</span>
+└── <span class="file">package.json</span>      <span class="comment"># workspaces</span>
+      </div>
+      <div class="scripts-list">
+        <div class="script-item">
+          <code>npm run dev</code>
+          <p>Starts web (port 3000) + API (port 8080) concurrently with colour-coded output</p>
+        </div>
+        <div class="script-item">
+          <code>npm run deploy</code>
+          <p>Pre-flight checks for missing env vars and CLI tools, then builds and deploys to all configured platforms</p>
+        </div>
+        <div class="script-item">
+          <code>.env.example</code>
+          <p>Every required environment variable listed with description and example value — based on your exact selections</p>
+        </div>
+        <div class="script-item">
+          <code>TROUBLESHOOTING.md</code>
+          <p>Common errors and fixes for your specific stack — only relevant sections included</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- ── AI Helper ───────────────────────────────────────────────────── -->
+<section id="ai-helper">
+  <div class="container">
+    <span class="section-label">Stuck?</span>
+    <h2>Ask an AI with full context</h2>
+    <p class="section-sub">Describe your error or question below. We'll open Claude, ChatGPT, or Gemini pre-loaded with everything they need to know about create-vibe-project.</p>
+
+    <div class="ai-card">
+      <h3>What's the issue?</h3>
+      <p>Paste your error message, describe what's not working, or ask anything about the tool.</p>
+      <textarea
+        id="ai-question"
+        class="ai-textarea"
+        placeholder="e.g. Getting ENOENT error when running npx create-vibe-project, or asking about how to set up Cloud Run deploy..."
+      ></textarea>
+      <div class="ai-label">Open with</div>
+      <div class="ai-buttons">
+        <button class="ai-btn ai-btn-claude" onclick="openAI('claude')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8l4 4-4 4"/></svg>
+          Ask Claude
+        </button>
+        <button class="ai-btn ai-btn-chatgpt" onclick="openAI('chatgpt')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Ask ChatGPT
+        </button>
+        <button class="ai-btn ai-btn-gemini" onclick="openAI('gemini')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Ask Gemini
+        </button>
+      </div>
+      <p class="ai-note">Claude and ChatGPT open pre-filled. For Gemini, the prompt is copied to your clipboard automatically.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ──────────────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-links">
+    <a href="https://github.com/developer-pritam/create-vibe-project" target="_blank">GitHub</a>
+    <a href="https://www.npmjs.com/package/create-vibe-project" target="_blank">npm</a>
+    <a href="https://github.com/developer-pritam/create-vibe-project/issues" target="_blank">Report an issue</a>
+  </div>
+  <p>create-vibe-project · MIT License · <a href="https://www.npmjs.com/package/create-vibe-project" target="_blank">v0.1.2</a></p>
+</footer>
+
+<!-- ── Toast ───────────────────────────────────────────────────────── -->
+<div id="toast"></div>
+
+<!-- ── Copy modal ─────────────────────────────────────────────────── -->
+<dialog id="copy-modal">
+  <h4>Copy this prompt and paste it in Gemini</h4>
+  <pre id="modal-content"></pre>
+  <div class="dialog-actions">
+    <button class="btn-ghost" onclick="document.getElementById('copy-modal').close()">Close</button>
+    <button class="btn-primary" onclick="copyModalContent()">Copy to clipboard</button>
+  </div>
+</dialog>
+
+<script>
+// ── Copy command ─────────────────────────────────────────────────────
+function copyCmd() {
+  navigator.clipboard.writeText('npx create-vibe-project').then(() => {
+    const btn = document.getElementById('copy-cmd');
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// ── Tab switching ─────────────────────────────────────────────────────
+function switchTab(name, el) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── AI context prompt ─────────────────────────────────────────────────
+function buildContextPrompt(userInput) {
+  return `You are an expert on a CLI tool called create-vibe-project (run via: npx create-vibe-project).
+
+WHAT IT DOES:
+create-vibe-project is an interactive CLI that scaffolds production-ready full-stack projects. It asks 13 questions and generates a complete project folder with \`npm run dev\` and \`npm run deploy\` pre-configured.
+
+USAGE:
+  npx create-vibe-project
+  cd my-app
+  npm install
+  cp .env.example .env   # fill in your values
+  npm run dev
+
+THE 13 QUESTIONS AND ALL OPTIONS:
+
+1. Project name — lowercase letters, numbers, hyphens only
+
+2. Frontend
+   - react-vite: React 18 + Vite, TypeScript, auto-proxies /api to backend on :8080
+   - nextjs: Next.js 15, SSR, app router
+   - static-html: Plain HTML/CSS/JS, served with npx serve
+   - none: API only, no frontend
+
+3. Backend API
+   - hono: Node.js + Hono, TypeScript, fast and lightweight
+   - fastapi: Python + FastAPI, async, great for AI/ML
+   - go: Go standard library, high performance
+   - none: Frontend only
+
+4. Database
+   - neon: Serverless PostgreSQL (free tier) — needs DATABASE_URL
+   - mongodb: MongoDB Atlas, NoSQL (free tier) — asks for MONGODB_URI at prompt time
+   - firestore: Google Firestore NoSQL — needs FIREBASE_PROJECT_ID + service account
+   - upstash-redis: Serverless Redis (free tier) — needs UPSTASH_REDIS_REST_URL + TOKEN
+   - none
+
+5. Authentication
+   - clerk: Pre-built UI, 10k MAU free — needs CLERK_PUBLISHABLE_KEY + SECRET_KEY
+   - firebase-auth: Google auth — needs FIREBASE_API_KEY etc.
+   - supabase-auth: Open source — needs SUPABASE_URL + ANON_KEY
+   - none
+
+6. File Storage
+   - r2: Cloudflare R2, S3-compatible, zero egress — needs R2_ACCOUNT_ID etc.
+   - firebase-storage: Firebase, free tier
+   - none
+
+7. Background Jobs
+   - cloud-scheduler: GCP Cloud Scheduler → Cloud Run cron jobs
+   - bullmq-upstash: BullMQ job queues backed by Upstash Redis
+   - none
+
+8. Real-time
+   - websockets: Socket.io on backend
+   - supabase-realtime: Managed subscriptions
+   - none
+
+9. AI / LLM
+   - llm-api: Anthropic Claude SDK wired, POST /api/chat ready — needs ANTHROPIC_API_KEY
+   - vector-rag: Claude + Pinecone embeddings — needs ANTHROPIC_API_KEY + PINECONE_API_KEY
+   - none
+
+10. Email
+    - resend: 3,000 emails/month free — needs RESEND_API_KEY
+    - none
+
+11. Payments
+    - stripe: Checkout + webhook handler pre-configured — needs STRIPE_SECRET_KEY etc.
+    - none
+
+12. Frontend Deploy
+    - cloudflare-pages: Global edge, unlimited bandwidth
+    - vercel: Best for Next.js
+    - firebase-hosting: Google CDN
+    - netlify: Simple, free tier
+
+13. Backend Deploy (only shown when backend !== none)
+    - cloud-run: Google Cloud Run, scales to zero — needs GCP_PROJECT_ID + gcloud CLI
+    - render: Simple, free tier (sleeps after 15min inactivity)
+    - flyio: Fly.io, global, 3 free VMs
+
+GENERATED PROJECT STRUCTURE:
+my-app/
+├── apps/web/            # Frontend (if selected)
+├── apps/api/            # Backend (if selected, includes Dockerfile)
+├── .github/workflows/deploy.yml   # CI/CD pre-wired
+├── scripts/deploy.ts    # npm run deploy logic with pre-flight checks
+├── .env.example         # All env vars with descriptions and examples
+├── .env                 # Pre-created, fill in values
+├── vibe.config.json     # Records all stack choices
+├── README.md            # Stack-specific getting started guide
+├── TROUBLESHOOTING.md   # Stack-specific error solutions
+└── package.json         # npm workspaces, dev + deploy scripts
+
+SCRIPTS IN GENERATED PROJECT:
+- npm run dev    → starts all services locally (concurrently if web+api)
+- npm run deploy → pre-flight checks then deploys to all configured platforms
+
+COMMON ERRORS AND FIXES:
+- ENOENT templates/: Run via npx, not from a local clone; reinstall if needed
+- Port in use: lsof -ti:3000 | xargs kill
+- FastAPI module not found: source apps/api/.venv/bin/activate first
+- Go 'air' not found: go install github.com/air-verse/air@latest
+- GCP_PROJECT_ID missing: Add to .env and run: export GCP_PROJECT_ID=your-id
+- gcloud not found: https://cloud.google.com/sdk/docs/install then gcloud auth login
+- Cloud Run 503: check logs: gcloud run services logs read <name> --region us-central1
+- Clerk publishableKey invalid: must start with pk_test_ (dev) or pk_live_ (prod)
+- Stripe webhook signature error: use the secret from 'stripe listen' for local dev
+- MongoDB connection error: check MONGODB_URI starts with mongodb:// or mongodb+srv://
+
+---
+
+USER QUESTION:
+${userInput}`;
+}
+
+// ── Open AI ───────────────────────────────────────────────────────────
+function openAI(provider) {
+  const userInput = document.getElementById('ai-question').value.trim();
+  if (!userInput) {
+    const ta = document.getElementById('ai-question');
+    ta.style.borderColor = '#ef4444';
+    ta.focus();
+    setTimeout(() => ta.style.borderColor = '', 1500);
+    showToast('Please describe your question first.');
+    return;
+  }
+
+  const fullPrompt = buildContextPrompt(userInput);
+  const encoded = encodeURIComponent(fullPrompt);
+
+  if (provider === 'claude') {
+    window.open('https://claude.ai/new?q=' + encoded, '_blank');
+
+  } else if (provider === 'chatgpt') {
+    window.open('https://chatgpt.com/?q=' + encoded, '_blank');
+
+  } else if (provider === 'gemini') {
+    navigator.clipboard.writeText(fullPrompt)
+      .then(() => {
+        showToast('✓ Prompt copied to clipboard — paste it in Gemini');
+        setTimeout(() => window.open('https://gemini.google.com/app', '_blank'), 700);
+      })
+      .catch(() => {
+        // Clipboard blocked — show modal with full prompt
+        document.getElementById('modal-content').textContent = fullPrompt;
+        document.getElementById('copy-modal').showModal();
+        setTimeout(() => window.open('https://gemini.google.com/app', '_blank'), 700);
+      });
+  }
+}
+
+function copyModalContent() {
+  const text = document.getElementById('modal-content').textContent;
+  navigator.clipboard.writeText(text).then(() => showToast('Copied!'));
+}
+</script>
+</body>
+</html>
