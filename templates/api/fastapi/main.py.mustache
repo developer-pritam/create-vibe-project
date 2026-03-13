@@ -1,0 +1,70 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
+import os
+{{#hasNeon}}
+from sqlalchemy import create_engine, text
+{{/hasNeon}}
+{{#hasResend}}
+import resend
+{{/hasResend}}
+{{#hasStripe}}
+import stripe
+{{/hasStripe}}
+{{#hasLlmApi}}
+import anthropic
+{{/hasLlmApi}}
+
+load_dotenv()
+
+app = FastAPI(title="{{projectName}}-api")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[os.getenv("FRONTEND_URL", "http://localhost:3000")],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+{{#hasNeon}}
+engine = create_engine(os.environ["DATABASE_URL"])
+{{/hasNeon}}
+{{#hasResend}}
+resend.api_key = os.environ["RESEND_API_KEY"]
+{{/hasResend}}
+{{#hasStripe}}
+stripe.api_key = os.environ["STRIPE_SECRET_KEY"]
+{{/hasStripe}}
+{{#hasLlmApi}}
+anthropic_client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+{{/hasLlmApi}}
+
+
+@app.get("/api/health")
+def health():
+    return {"status": "ok"}
+
+{{#hasNeon}}
+@app.get("/api/items")
+def get_items():
+    with engine.connect() as conn:
+        rows = conn.execute(text("SELECT 1 AS id, 'Hello from Neon' AS message"))
+        return [dict(row._mapping) for row in rows]
+{{/hasNeon}}
+
+{{#hasLlmApi}}
+from pydantic import BaseModel
+
+class ChatRequest(BaseModel):
+    message: str
+
+@app.post("/api/chat")
+def chat(req: ChatRequest):
+    response = anthropic_client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=1024,
+        messages=[{"role": "user", "content": req.message}],
+    )
+    return {"reply": response.content[0].text}
+{{/hasLlmApi}}

@@ -1,0 +1,29 @@
+{{#hasClerk}}
+import { ClerkProvider } from '@clerk/nextjs';
+{{/hasClerk}}
+import type { Metadata } from 'next';
+import './globals.css';
+
+export const metadata: Metadata = {
+  title: '{{projectName}}',
+  description: 'Built with create-vibe-stack',
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  {{#hasClerk}}
+  return (
+    <ClerkProvider>
+      <html lang="en">
+        <body>{children}</body>
+      </html>
+    </ClerkProvider>
+  );
+  {{/hasClerk}}
+  {{^hasClerk}}
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  );
+  {{/hasClerk}}
+}

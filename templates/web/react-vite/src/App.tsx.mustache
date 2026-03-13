@@ -1,0 +1,28 @@
+{{#hasClerk}}
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/react';
+{{/hasClerk}}
+import './App.css';
+
+export default function App() {
+  return (
+    <div className="app">
+      {{#hasClerk}}
+      <header>
+        <SignedOut>
+          <SignInButton />
+        </SignedOut>
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
+      </header>
+      {{/hasClerk}}
+      <main>
+        <h1>{{projectName}}</h1>
+        <p>Your app is ready. Start building!</p>
+        {{#hasApi}}
+        <p>API is running at <code>http://localhost:8080</code> — proxied via <code>/api</code></p>
+        {{/hasApi}}
+      </main>
+    </div>
+  );
+}

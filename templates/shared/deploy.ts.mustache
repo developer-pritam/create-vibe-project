@@ -1,0 +1,72 @@
+import { execSync } from 'child_process';
+import { readFileSync } from 'fs';
+
+const config = JSON.parse(readFileSync('./vibe.config.json', 'utf8'));
+
+function run(cmd: string, opts: { cwd?: string } = {}): void {
+  console.log(`\n> ${cmd}`);
+  execSync(cmd, { stdio: 'inherit', ...opts });
+}
+
+async function deployWeb(): Promise<void> {
+  console.log('\nBuilding frontend...');
+  run('npm run build:web');
+
+  {{#isCloudflarePages}}
+  console.log('\nDeploying to Cloudflare Pages...');
+  run(`npx wrangler pages deploy apps/web/dist --project-name ${config.projectName}`);
+  {{/isCloudflarePages}}
+
+  {{#isVercel}}
+  console.log('\nDeploying to Vercel...');
+  run('npx vercel --prod', { cwd: 'apps/web' });
+  {{/isVercel}}
+
+  {{#isFirebaseHosting}}
+  console.log('\nDeploying to Firebase Hosting...');
+  run('npx firebase deploy --only hosting');
+  {{/isFirebaseHosting}}
+
+  {{#isNetlify}}
+  console.log('\nDeploying to Netlify...');
+  run('npx netlify-cli deploy --prod --dir dist', { cwd: 'apps/web' });
+  {{/isNetlify}}
+}
+
+async function deployApi(): Promise<void> {
+  {{#isCloudRun}}
+  console.log('\nDeploying to Google Cloud Run...');
+  const project = process.env.GCP_PROJECT_ID;
+  const region = process.env.GCP_REGION ?? 'us-central1';
+  if (!project) {
+    console.error('GCP_PROJECT_ID env var is required for Cloud Run deployment.');
+    process.exit(1);
+  }
+  run(`gcloud run deploy ${config.projectName}-api --source apps/api --region ${region} --project ${project} --allow-unauthenticated`);
+  {{/isCloudRun}}
+
+  {{#isFlyio}}
+  console.log('\nDeploying to Fly.io...');
+  run('flyctl deploy --remote-only', { cwd: 'apps/api' });
+  {{/isFlyio}}
+
+  {{#isRender}}
+  console.log('\nRender: push to main to trigger automatic deployment.');
+  console.log('Connect your repo at https://dashboard.render.com');
+  {{/isRender}}
+}
+
+(async () => {
+  try {
+    {{#hasWeb}}
+    await deployWeb();
+    {{/hasWeb}}
+    {{#hasApi}}
+    await deployApi();
+    {{/hasApi}}
+    console.log('\nDeploy complete!');
+  } catch (err) {
+    console.error('\nDeploy failed:', err);
+    process.exit(1);
+  }
+})();

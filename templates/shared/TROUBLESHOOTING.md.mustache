@@ -1,0 +1,615 @@
+# Troubleshooting
+
+Common errors and how to fix them for `{{projectName}}`.
+
+---
+
+## Local development
+
+### `npm run dev` — port already in use
+
+```
+Error: listen EADDRINUSE: address already in use :::3000
+Error: listen EADDRINUSE: address already in use :::8080
+```
+
+**Fix:** Kill the process using the port:
+```bash
+# Find and kill on macOS/Linux
+lsof -ti:3000 | xargs kill
+lsof -ti:8080 | xargs kill
+
+# Windows
+netstat -ano | findstr :3000
+taskkill /PID <PID> /F
+```
+
+---
+
+### `npm run dev` — `concurrently` not found
+
+```
+sh: concurrently: command not found
+```
+
+**Fix:** Install root dependencies:
+```bash
+npm install
+```
+
+---
+
+{{#isFastapi}}
+### FastAPI — `ModuleNotFoundError`
+
+```
+ModuleNotFoundError: No module named 'fastapi'
+```
+
+**Fix:** Activate your virtual environment:
+```bash
+cd apps/api
+source .venv/bin/activate      # macOS/Linux
+.venv\Scripts\activate         # Windows
+pip install -r requirements.txt
+```
+
+---
+
+### FastAPI — `uvicorn` not found
+
+```
+npm run dev:api
+sh: uvicorn: command not found
+```
+
+**Fix:** Your virtual environment is not active. The `dev:api` script runs `uvicorn` directly. Either:
+- Activate the venv in your terminal before running `npm run dev`
+- Or use `npm run dev:api` from inside the activated venv
+
+---
+
+{{/isFastapi}}
+{{#isGo}}
+### Go — `air: command not found`
+
+```
+sh: air: command not found
+```
+
+**Fix:** Install air (Go live reload):
+```bash
+go install github.com/air-verse/air@latest
+# Make sure $GOPATH/bin is in your PATH:
+export PATH=$PATH:$(go env GOPATH)/bin
+```
+
+---
+
+### Go — `go: cannot find main module`
+
+```
+go: cannot find main module; to create a module there, run: go mod init
+```
+
+**Fix:** Run from the correct directory:
+```bash
+cd apps/api
+go mod download
+```
+
+---
+
+{{/isGo}}
+{{#hasNeon}}
+### Neon — connection refused / SSL error
+
+```
+Error: Connection terminated unexpectedly
+NeonDbError: SSL connection is required
+```
+
+**Fix:**
+1. Make sure `DATABASE_URL` ends with `?sslmode=require`
+2. Check your Neon project is not paused (free tier pauses after inactivity — unpause from the Neon dashboard)
+3. Verify the connection string format: `postgresql://user:pass@ep-xxx.neon.tech/dbname?sslmode=require`
+
+---
+
+### Neon — `ECONNREFUSED 127.0.0.1`
+
+```
+connect ECONNREFUSED 127.0.0.1:5432
+```
+
+**Fix:** You're connecting to a local PostgreSQL instead of Neon. Make sure `.env` is loaded and `DATABASE_URL` is set correctly. Check that your app loads `dotenv` or that you're running with the env vars set.
+
+---
+
+{{/hasNeon}}
+{{#hasFirestore}}
+### Firestore — `Error: Could not load the default credentials`
+
+```
+Error: Could not load the default credentials
+```
+
+**Fix:** You're missing service account credentials. In `.env`:
+```bash
+FIREBASE_PROJECT_ID=your-project-id
+FIREBASE_CLIENT_EMAIL=firebase-adminsdk@your-project.iam.gserviceaccount.com
+# Note: the private key must have literal \n — wrap in quotes
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIE...\n-----END PRIVATE KEY-----\n"
+```
+
+If you copied the key from the JSON file, replace actual newlines with `\n`.
+
+---
+
+### Firestore — `PERMISSION_DENIED`
+
+```
+Error 7: PERMISSION_DENIED
+```
+
+**Fix:** Your Firestore security rules are blocking access. In Firebase Console → Firestore → Rules, allow reads/writes for development:
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if true; // dev only — lock this down before production
+    }
+  }
+}
+```
+
+---
+
+{{/hasFirestore}}
+{{#hasUpstashRedis}}
+### Upstash Redis — `WRONGPASS` or 401
+
+```
+ResponseError: WRONGPASS invalid username-password pair
+UpstashError: Unauthorized
+```
+
+**Fix:** Check `UPSTASH_REDIS_REST_TOKEN` in your `.env`. Copy the token from the Upstash dashboard (Database → REST API → Token). Make sure there are no extra spaces or quotes.
+
+---
+
+{{/hasUpstashRedis}}
+{{#hasClerk}}
+### Clerk — `publishableKey is invalid`
+
+```
+@clerk/react: publishableKey is invalid. You can get your Publishable key at https://dashboard.clerk.com/...
+```
+
+**Fix:**
+1. Check `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` in `.env` starts with `pk_test_` (dev) or `pk_live_` (prod)
+2. For Vite, env vars must start with `VITE_` to be exposed to the browser:
+   - Rename to `VITE_CLERK_PUBLISHABLE_KEY` in `.env`
+   - Update the `ClerkProvider publishableKey` prop to use `import.meta.env.VITE_CLERK_PUBLISHABLE_KEY`
+3. Restart the dev server after changing `.env`
+
+---
+
+### Clerk — `Error: Clerk: auth() was called but Clerk can't detect usage of clerkMiddleware()`
+
+```
+Error: Clerk: auth() was called but Clerk can't detect usage of clerkMiddleware()
+```
+
+**Fix:** Add `middleware.ts` to your Next.js root:
+```ts
+// middleware.ts
+import { clerkMiddleware } from '@clerk/nextjs/server';
+export default clerkMiddleware();
+export const config = {
+  matcher: ['/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)', '/(api|trpc)(.*)'],
+};
+```
+
+---
+
+{{/hasClerk}}
+{{#hasStripe}}
+### Stripe — `No signatures found matching the expected signature for payload`
+
+```
+StripeSignatureVerificationError: No signatures found matching the expected signature for payload
+```
+
+**Fix:** This happens when testing webhooks. The webhook secret in `.env` must match the one from the Stripe CLI or your dashboard endpoint:
+```bash
+# For local testing, use the Stripe CLI secret (starts with whsec_):
+stripe listen --forward-to localhost:8080/api/webhooks/stripe
+# The CLI prints the webhook signing secret — use that value for STRIPE_WEBHOOK_SECRET
+```
+
+---
+
+### Stripe — `You must parse the raw request body`
+
+```
+Stripe: Webhook signature verification failed. You must parse the raw request body
+```
+
+**Fix:** In your webhook handler, use the raw body (not JSON-parsed). In Hono, use `c.req.text()` not `c.req.json()`. The template already handles this correctly — check that you haven't added a global JSON body parser that runs before the webhook route.
+
+---
+
+{{/hasStripe}}
+{{#hasResend}}
+### Resend — `You can only send testing emails to your own email address`
+
+```
+{"statusCode":403,"message":"You can only send testing emails to your own email address"}
+```
+
+**Fix:** Your domain is not verified yet. Options:
+1. Send to your own email address while testing
+2. Or verify your domain in the Resend dashboard: Domains → Add Domain → follow DNS setup
+
+---
+
+### Resend — `API key is invalid`
+
+```
+{"statusCode":401,"message":"API key is invalid"}
+```
+
+**Fix:** Check `RESEND_API_KEY` in `.env` starts with `re_`. Get a new key from [resend.com/api-keys](https://resend.com/api-keys).
+
+---
+
+{{/hasResend}}
+{{#hasLlmApi}}
+### Anthropic — `401 Authentication error`
+
+```
+AuthenticationError: 401 {"type":"error","error":{"type":"authentication_error","message":"invalid x-api-key"}}
+```
+
+**Fix:** Check `ANTHROPIC_API_KEY` in `.env`. It should start with `sk-ant-`. Get a new key from [console.anthropic.com](https://console.anthropic.com/settings/keys).
+
+---
+
+### Anthropic — `529 Overloaded`
+
+```
+OverloadedError: 529 {"type":"error","error":{"type":"overloaded_error","message":"Overloaded"}}
+```
+
+**Fix:** Anthropic API is temporarily overloaded. Add retry logic with exponential backoff, or retry the request after a few seconds.
+
+---
+
+{{/hasLlmApi}}
+
+## Build errors
+
+### TypeScript — `Cannot find module` in apps/web
+
+```
+TS2307: Cannot find module '@clerk/react' or its corresponding type declarations
+```
+
+**Fix:** Install workspace dependencies:
+```bash
+npm install   # from project root — installs all workspace packages
+```
+
+---
+
+### Vite build — `Rollup failed to resolve import`
+
+```
+[vite]: Rollup failed to resolve import "some-package" from "src/App.tsx"
+```
+
+**Fix:** The package is missing from `apps/web/package.json`. Add it:
+```bash
+npm install some-package -w apps/web
+```
+
+---
+
+{{#isNextjs}}
+### Next.js — `Module not found: Can't resolve 'server-only'`
+
+```
+Module not found: Can't resolve 'server-only'
+```
+
+**Fix:**
+```bash
+npm install server-only -w apps/web
+```
+
+---
+
+### Next.js — `useXxx` is a client component — add "use client"
+
+```
+Error: useRouter only works in Client Components. Add the "use client" directive at the top of the file to use it.
+```
+
+**Fix:** Add `'use client';` at the top of any component that uses React hooks or browser APIs:
+```tsx
+'use client';
+import { useRouter } from 'next/navigation';
+```
+
+---
+
+{{/isNextjs}}
+{{#isFastapi}}
+### FastAPI — `pydantic_core` build error on install
+
+```
+error: command '/usr/bin/gcc' failed with exit code 1
+```
+
+**Fix:** Use a pre-built wheel. Upgrade pip first:
+```bash
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+---
+
+{{/isFastapi}}
+
+## Deployment errors
+
+{{#isCloudRun}}
+### Cloud Run — `Build failed: failed to build`
+
+```
+Step #1: error building image: failed to solve
+```
+
+**Fix:** Check your `Dockerfile` syntax. Test the build locally first:
+```bash
+cd apps/api
+docker build -t my-api .
+docker run -p 8080:8080 --env-file ../../.env my-api
+```
+
+---
+
+### Cloud Run — `ERROR: (gcloud.run.deploy) PERMISSION_DENIED`
+
+```
+ERROR: (gcloud.run.deploy) PERMISSION_DENIED: Permission 'run.services.create' denied
+```
+
+**Fix:** Enable the Cloud Run API and ensure your account has permissions:
+```bash
+gcloud services enable run.googleapis.com cloudbuild.googleapis.com
+gcloud projects add-iam-policy-binding YOUR_PROJECT \
+  --member="user:YOUR_EMAIL" \
+  --role="roles/run.admin"
+```
+
+---
+
+### Cloud Run — service returns 503
+
+The service starts but returns 503 errors.
+
+**Fix:** Your container is likely crashing on startup. Check logs:
+```bash
+gcloud run services logs read {{projectName}}-api --region us-central1
+```
+
+Common causes:
+- Missing environment variables (add them: `gcloud run services update {{projectName}}-api --set-env-vars KEY=VALUE`)
+- App not listening on `PORT` env var (Cloud Run sets this — use `process.env.PORT ?? 8080`)
+- Container crashing due to failed DB connection at startup
+
+---
+
+### Cloud Run — `gcloud: command not found`
+
+```
+sh: gcloud: command not found
+```
+
+**Fix:** Install the Google Cloud SDK: https://cloud.google.com/sdk/docs/install
+```bash
+# macOS with Homebrew:
+brew install --cask google-cloud-sdk
+# Then:
+gcloud init
+gcloud auth login
+```
+
+---
+
+{{/isCloudRun}}
+{{#isCloudflarePages}}
+### Cloudflare Pages — `wrangler: command not found`
+
+```
+sh: wrangler: command not found
+```
+
+**Fix:**
+```bash
+npm install -g wrangler
+wrangler login
+```
+
+---
+
+### Cloudflare Pages — `A project with this name already exists`
+
+```
+✘ [ERROR] A project with this name already exists with a different account
+```
+
+**Fix:** The project name must be unique across all Cloudflare accounts. Change the project name in `package.json` deploy script or use an existing project:
+```bash
+wrangler pages deploy apps/web/dist --project-name my-unique-name-123
+```
+
+---
+
+### Cloudflare Pages — build succeeds but site is blank
+
+The deploy succeeds but the page is empty or shows 404.
+
+**Fix:** Check that the build output is in the correct directory. For Vite, it's `apps/web/dist`. Verify by running:
+```bash
+npm run build:web
+ls apps/web/dist   # should contain index.html
+```
+
+For SPA routing (React Router), add a `_redirects` file to `apps/web/public/`:
+```
+/*  /index.html  200
+```
+
+---
+
+{{/isCloudflarePages}}
+{{#isVercel}}
+### Vercel — `Error: No Output Directory named "public" found`
+
+```
+Error: No Output Directory named "public" found after the Build completed.
+```
+
+**Fix:** Tell Vercel the output directory. In `apps/web/vercel.json`:
+```json
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist"
+}
+```
+
+---
+
+### Vercel — environment variables not available in build
+
+The app builds but env vars are undefined.
+
+**Fix:** In Vercel dashboard → Settings → Environment Variables, add all variables from `.env.example`. For Vite apps, variables must be prefixed with `VITE_`.
+
+---
+
+{{/isVercel}}
+{{#isRender}}
+### Render — service sleeps and takes 30+ seconds to respond
+
+This is expected behavior on Render's free tier. Services spin down after 15 minutes of inactivity and take ~30 seconds to cold start.
+
+**Fix options:**
+1. Upgrade to Render's paid tier (always-on)
+2. Use a cron job to ping `/api/health` every 14 minutes to keep the service warm
+3. Switch to Cloud Run or Fly.io which handle cold starts better
+
+---
+
+### Render — `Build failed: npm install exited with 1`
+
+```
+Build failed: npm install exited with 1
+```
+
+**Fix:** Make sure `apps/api/package.json` has all dependencies listed. Render uses the `package.json` in the root directory of the service, not the monorepo root. Check that you set the root directory to `apps/api` in your Render service settings.
+
+---
+
+{{/isRender}}
+{{#isFlyio}}
+### Fly.io — `Error: failed to fetch an app config or authenticate`
+
+```
+Error: failed to fetch an app config or authenticate
+```
+
+**Fix:**
+```bash
+fly auth login
+# Then from apps/api:
+cd apps/api
+fly status
+```
+
+---
+
+### Fly.io — `Error: app name is already taken`
+
+```
+Error: app name is already taken
+```
+
+**Fix:** App names are globally unique on Fly.io. Edit `apps/api/fly.toml` and change the `app` name.
+
+---
+
+{{/isFlyio}}
+
+## GitHub Actions CI/CD errors
+
+### `Error: Context access might be invalid: secrets.XXX`
+
+The workflow references a secret that doesn't exist.
+
+**Fix:** Add the required secret to GitHub: Repository → Settings → Secrets and variables → Actions → New repository secret.
+
+Required secrets for this stack:
+{{#isCloudflarePages}}- `CLOUDFLARE_API_TOKEN`{{/isCloudflarePages}}
+{{#isVercel}}- `VERCEL_TOKEN`{{/isVercel}}
+{{#isFirebaseHosting}}- `FIREBASE_SERVICE_ACCOUNT`, `FIREBASE_PROJECT_ID`{{/isFirebaseHosting}}
+{{#isNetlify}}- `NETLIFY_AUTH_TOKEN`, `NETLIFY_SITE_ID`{{/isNetlify}}
+{{#isCloudRun}}- `GCP_SA_KEY`, `GCP_REGION`{{/isCloudRun}}
+{{#isFlyio}}- `FLY_API_TOKEN`{{/isFlyio}}
+
+---
+
+### GitHub Actions — workflow doesn't run on push
+
+**Fix:** Make sure you're pushing to the `main` branch. The workflow is configured to trigger on `push` to `main`. Check your default branch name:
+```bash
+git branch   # confirm you're on main
+git push origin main
+```
+
+---
+
+## Environment variable checklist
+
+Before running or deploying, verify all required variables are set:
+
+```bash
+# Check which vars are missing from .env
+node -e "
+const required = require('fs').readFileSync('.env.example', 'utf8')
+  .split('\n').filter(l => l.match(/^[A-Z]/)).map(l => l.split('=')[0]);
+const env = require('fs').readFileSync('.env', 'utf8')
+  .split('\n').filter(l => l.match(/^[A-Z]/)).map(l => l.split('=')[0]);
+const missing = required.filter(k => !env.includes(k) || !process.env[k]);
+if (missing.length) console.log('Missing:', missing);
+else console.log('All env vars present');
+"
+```
+
+---
+
+## Still stuck?
+
+1. Check the `vibe.config.json` in your project root — it shows exactly which services were configured
+2. Check individual service docs:
+{{#hasNeon}}   - [Neon docs](https://neon.tech/docs){{/hasNeon}}
+{{#hasClerk}}   - [Clerk docs](https://clerk.com/docs){{/hasClerk}}
+{{#hasStripe}}   - [Stripe docs](https://stripe.com/docs){{/hasStripe}}
+{{#hasLlmApi}}   - [Anthropic API docs](https://docs.anthropic.com){{/hasLlmApi}}
+{{#isCloudRun}}   - [Cloud Run docs](https://cloud.google.com/run/docs){{/isCloudRun}}
+{{#isCloudflarePages}}   - [Cloudflare Pages docs](https://developers.cloudflare.com/pages){{/isCloudflarePages}}
+3. Open an issue at [github.com/your-org/create-vibe-stack](https://github.com/your-org/create-vibe-stack/issues)

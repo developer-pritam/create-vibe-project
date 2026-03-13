@@ -1,0 +1,18 @@
+{{#hasClerk}}
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
+{{/hasClerk}}
+
+export default function Home() {
+  return (
+    <main style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', gap: '1rem' }}>
+      {{#hasClerk}}
+      <div style={{ position: 'absolute', top: '1rem', right: '1rem' }}>
+        <SignedOut><SignInButton /></SignedOut>
+        <SignedIn><UserButton /></SignedIn>
+      </div>
+      {{/hasClerk}}
+      <h1>{{projectName}}</h1>
+      <p>Your app is ready. Start building!</p>
+    </main>
+  );
+}

@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.npmjs.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:hono.dev)",
+      "WebFetch(domain:docs.neon.tech)",
+      "Bash(npm run:*)",
+      "Bash(node /Users/pritam/Code/Pritam/vibe-stack/dist/index.js)",
+      "Bash(rm -rf /tmp/my-demo-app && node --loader ts-node/esm test-scaffold.mjs 2>&1 || npx tsx test-scaffold.mjs 2>&1)",
+      "Bash(rm -rf /tmp/my-demo-app && npx tsx test-scaffold.mjs 2>&1)",
+      "Bash(git status:*)",
+      "Bash(git init:*)",
+      "Bash(cat > .gitignore << 'EOF'\nnode_modules/\ndist/\n.env\n*.log\n.DS_Store\n.claude/\nEOF\n\ngit rm -r --cached node_modules dist .claude 2>/dev/null || true\ngit add .\ngit status --short | head -30)",
+      "Bash(git rm:*)"
+    ]
+  }
+}

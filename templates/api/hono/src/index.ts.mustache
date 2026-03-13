@@ -1,0 +1,101 @@
+import { Hono } from 'hono';
+import { cors } from 'hono/cors';
+import { logger } from 'hono/logger';
+import { serve } from '@hono/node-server';
+{{#hasNeon}}
+import { neon } from '@neondatabase/serverless';
+{{/hasNeon}}
+{{#hasUpstashRedis}}
+import { Redis } from '@upstash/redis';
+{{/hasUpstashRedis}}
+{{#hasResend}}
+import { Resend } from 'resend';
+{{/hasResend}}
+{{#hasStripe}}
+import Stripe from 'stripe';
+{{/hasStripe}}
+{{#hasLlmApi}}
+import Anthropic from '@anthropic-ai/sdk';
+{{/hasLlmApi}}
+
+const app = new Hono();
+
+app.use('*', logger());
+app.use(
+  '*',
+  cors({
+    origin: process.env.FRONTEND_URL ?? 'http://localhost:3000',
+    credentials: true,
+  })
+);
+
+{{#hasNeon}}
+const sql = neon(process.env.DATABASE_URL!);
+{{/hasNeon}}
+{{#hasUpstashRedis}}
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
+{{/hasUpstashRedis}}
+{{#hasResend}}
+const resend = new Resend(process.env.RESEND_API_KEY!);
+{{/hasResend}}
+{{#hasStripe}}
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+{{/hasStripe}}
+{{#hasLlmApi}}
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
+{{/hasLlmApi}}
+
+// Health check
+app.get('/api/health', (c) => c.json({ status: 'ok' }));
+
+{{#hasNeon}}
+// Example DB route
+app.get('/api/items', async (c) => {
+  const rows = await sql`SELECT 1 AS id, 'Hello from Neon' AS message`;
+  return c.json(rows);
+});
+{{/hasNeon}}
+
+{{#hasStripe}}
+// Stripe checkout session
+app.post('/api/checkout', async (c) => {
+  const session = await stripe.checkout.sessions.create({
+    payment_method_types: ['card'],
+    mode: 'payment',
+    line_items: [{ price: 'price_xxx', quantity: 1 }],
+    success_url: `${process.env.FRONTEND_URL}/success`,
+    cancel_url: `${process.env.FRONTEND_URL}/cancel`,
+  });
+  return c.json({ url: session.url });
+});
+
+// Stripe webhook
+app.post('/api/webhooks/stripe', async (c) => {
+  const sig = c.req.header('stripe-signature')!;
+  const body = await c.req.text();
+  const event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_WEBHOOK_SECRET!);
+  // Handle event.type here
+  return c.json({ received: true });
+});
+{{/hasStripe}}
+
+{{#hasLlmApi}}
+// AI chat route
+app.post('/api/chat', async (c) => {
+  const { message } = await c.req.json<{ message: string }>();
+  const response = await anthropic.messages.create({
+    model: 'claude-sonnet-4-6',
+    max_tokens: 1024,
+    messages: [{ role: 'user', content: message }],
+  });
+  return c.json({ reply: response.content[0] });
+});
+{{/hasLlmApi}}
+
+const PORT = Number(process.env.PORT ?? 8080);
+serve({ fetch: app.fetch, port: PORT }, () => {
+  console.log(`API running at http://localhost:${PORT}`);
+});

@@ -1,0 +1,403 @@
+# {{projectName}}
+
+> Scaffolded with [create-vibe-stack](https://github.com/your-org/create-vibe-stack)
+
+## Stack
+
+| Layer | Choice |
+|-------|--------|
+{{#isReactVite}}| Frontend | React + Vite |{{/isReactVite}}
+{{#isNextjs}}| Frontend | Next.js |{{/isNextjs}}
+{{#isStaticHtml}}| Frontend | Static HTML |{{/isStaticHtml}}
+{{#isHono}}| Backend | Node.js + Hono |{{/isHono}}
+{{#isFastapi}}| Backend | Python + FastAPI |{{/isFastapi}}
+{{#isGo}}| Backend | Go |{{/isGo}}
+{{#hasNeon}}| Database | PostgreSQL (Neon) |{{/hasNeon}}
+{{#hasFirestore}}| Database | Firestore |{{/hasFirestore}}
+{{#hasUpstashRedis}}| Database | Redis (Upstash) |{{/hasUpstashRedis}}
+{{#hasClerk}}| Auth | Clerk |{{/hasClerk}}
+{{#hasFirebaseAuth}}| Auth | Firebase Auth |{{/hasFirebaseAuth}}
+{{#hasSupabaseAuth}}| Auth | Supabase Auth |{{/hasSupabaseAuth}}
+{{#hasR2}}| Storage | Cloudflare R2 |{{/hasR2}}
+{{#hasFirebaseStorage}}| Storage | Firebase Storage |{{/hasFirebaseStorage}}
+{{#hasResend}}| Email | Resend |{{/hasResend}}
+{{#hasStripe}}| Payments | Stripe |{{/hasStripe}}
+{{#hasLlmApi}}| AI | Anthropic Claude |{{/hasLlmApi}}
+{{#hasVectorRag}}| AI | Claude + Pinecone (RAG) |{{/hasVectorRag}}
+{{#isCloudflarePages}}| Frontend Deploy | Cloudflare Pages |{{/isCloudflarePages}}
+{{#isVercel}}| Frontend Deploy | Vercel |{{/isVercel}}
+{{#isFirebaseHosting}}| Frontend Deploy | Firebase Hosting |{{/isFirebaseHosting}}
+{{#isNetlify}}| Frontend Deploy | Netlify |{{/isNetlify}}
+{{#isCloudRun}}| Backend Deploy | Google Cloud Run |{{/isCloudRun}}
+{{#isRender}}| Backend Deploy | Render |{{/isRender}}
+{{#isFlyio}}| Backend Deploy | Fly.io |{{/isFlyio}}
+
+---
+
+## Getting started
+
+### 1. Install dependencies
+
+```bash
+npm install
+```
+
+{{#isFastapi}}
+```bash
+cd apps/api
+python -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+cd ../..
+```
+{{/isFastapi}}
+
+{{#isGo}}
+```bash
+cd apps/api
+go mod download
+# Install air for live reload:
+go install github.com/air-verse/air@latest
+cd ../..
+```
+{{/isGo}}
+
+### 2. Set up environment variables
+
+```bash
+cp .env.example .env
+```
+
+Open `.env` and fill in the values. See the [Environment variables](#environment-variables) section below for where to get each one.
+
+### 3. Start local development
+
+```bash
+npm run dev
+```
+
+{{#hasWeb}}
+- Frontend: [http://localhost:3000](http://localhost:3000)
+{{/hasWeb}}
+{{#hasApi}}
+- Backend API: [http://localhost:8080](http://localhost:8080)
+- Health check: [http://localhost:8080/api/health](http://localhost:8080/api/health)
+{{/hasApi}}
+
+---
+
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start all services locally |
+{{#hasWeb}}| `npm run dev:web` | Frontend only |
+| `npm run build:web` | Build frontend for production |{{/hasWeb}}
+{{#hasApi}}| `npm run dev:api` | Backend only |{{/hasApi}}
+| `npm run deploy` | Build and deploy to all configured platforms |
+
+---
+
+## Environment variables
+
+{{#hasNeon}}
+### Neon (PostgreSQL)
+
+1. Create a free account at [neon.tech](https://neon.tech)
+2. Create a new project
+3. Copy the connection string from the dashboard
+
+```
+DATABASE_URL=postgresql://user:pass@ep-xxx.neon.tech/dbname?sslmode=require
+```
+{{/hasNeon}}
+
+{{#hasFirestore}}
+### Firestore
+
+1. Go to [Firebase Console](https://console.firebase.google.com)
+2. Create a project → Firestore Database → Create database
+3. Project Settings → Service accounts → Generate new private key
+4. Copy values from the downloaded JSON file
+
+```
+FIREBASE_PROJECT_ID=your-project-id
+FIREBASE_CLIENT_EMAIL=firebase-adminsdk@your-project.iam.gserviceaccount.com
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+```
+{{/hasFirestore}}
+
+{{#hasUpstashRedis}}
+### Upstash Redis
+
+1. Create a free account at [upstash.com](https://upstash.com)
+2. Create a new Redis database
+3. Copy REST URL and token from the database details
+
+```
+UPSTASH_REDIS_REST_URL=https://xxx.upstash.io
+UPSTASH_REDIS_REST_TOKEN=AXxx...
+```
+{{/hasUpstashRedis}}
+
+{{#hasClerk}}
+### Clerk
+
+1. Create a free account at [clerk.com](https://clerk.com)
+2. Create a new application
+3. Dashboard → API Keys
+
+```
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+```
+{{/hasClerk}}
+
+{{#hasFirebaseAuth}}
+### Firebase Auth
+
+1. Go to [Firebase Console](https://console.firebase.google.com)
+2. Authentication → Get started → enable your sign-in methods
+3. Project Settings → Your apps → Add app → Web
+
+```
+NEXT_PUBLIC_FIREBASE_API_KEY=AIza...
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
+```
+{{/hasFirebaseAuth}}
+
+{{#hasSupabaseAuth}}
+### Supabase Auth
+
+1. Create a free project at [supabase.com](https://supabase.com)
+2. Project Settings → API
+
+```
+NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOi...
+```
+{{/hasSupabaseAuth}}
+
+{{#hasR2}}
+### Cloudflare R2
+
+1. Cloudflare Dashboard → R2 → Create bucket
+2. Manage R2 API Tokens → Create API token (Object Read & Write)
+3. Account ID is on the R2 overview page
+
+```
+R2_ACCOUNT_ID=abc123
+R2_ACCESS_KEY_ID=key123
+R2_SECRET_ACCESS_KEY=secret123
+R2_BUCKET_NAME=my-bucket
+R2_PUBLIC_URL=https://pub-xxx.r2.dev
+```
+{{/hasR2}}
+
+{{#hasResend}}
+### Resend
+
+1. Create a free account at [resend.com](https://resend.com)
+2. Add and verify your sending domain (or use the sandbox domain for testing)
+3. API Keys → Create API Key
+
+```
+RESEND_API_KEY=re_...
+RESEND_FROM_EMAIL=noreply@yourdomain.com
+```
+{{/hasResend}}
+
+{{#hasStripe}}
+### Stripe
+
+1. Create an account at [stripe.com](https://stripe.com)
+2. Developers → API keys (use test keys for development)
+3. Developers → Webhooks → Add endpoint → `https://your-api-url/api/webhooks/stripe`
+   - Listen for: `payment_intent.succeeded`, `checkout.session.completed`
+4. Reveal the webhook signing secret
+
+```
+STRIPE_SECRET_KEY=sk_test_...
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+```
+
+**Testing webhooks locally:**
+```bash
+# Install Stripe CLI: https://stripe.com/docs/stripe-cli
+stripe login
+stripe listen --forward-to localhost:8080/api/webhooks/stripe
+```
+{{/hasStripe}}
+
+{{#hasLlmApi}}
+### Anthropic API
+
+1. Create an account at [console.anthropic.com](https://console.anthropic.com)
+2. API Keys → Create Key
+
+```
+ANTHROPIC_API_KEY=sk-ant-...
+```
+{{/hasLlmApi}}
+
+{{#hasVectorRag}}
+### Pinecone
+
+1. Create a free account at [pinecone.io](https://pinecone.io)
+2. Create an index (dimension: 1536 for text-embedding-3-small, or 3072 for text-embedding-3-large)
+3. API Keys → Create API Key
+
+```
+ANTHROPIC_API_KEY=sk-ant-...
+PINECONE_API_KEY=pcsk_...
+PINECONE_INDEX=my-index
+```
+{{/hasVectorRag}}
+
+{{#isCloudRun}}
+### Google Cloud Run
+
+1. Install gcloud CLI: https://cloud.google.com/sdk/docs/install
+2. Run: `gcloud auth login`
+3. Create a project at https://console.cloud.google.com
+4. Enable APIs: `gcloud services enable run.googleapis.com cloudbuild.googleapis.com`
+
+```
+GCP_PROJECT_ID=your-project-id
+GCP_REGION=us-central1
+```
+{{/isCloudRun}}
+
+---
+
+## Deploying
+
+### One-command deploy
+
+```bash
+npm run deploy
+```
+
+{{#isCloudflarePages}}
+**First time setup (Cloudflare Pages):**
+```bash
+npm install -g wrangler
+wrangler login
+# Create the project first (one time):
+wrangler pages project create {{projectName}}
+```
+{{/isCloudflarePages}}
+
+{{#isVercel}}
+**First time setup (Vercel):**
+```bash
+npm install -g vercel
+vercel login
+# Link project (one time, from apps/web):
+cd apps/web && vercel
+```
+{{/isVercel}}
+
+{{#isFirebaseHosting}}
+**First time setup (Firebase Hosting):**
+```bash
+npm install -g firebase-tools
+firebase login
+firebase init hosting   # select your project, set public dir to dist
+```
+{{/isFirebaseHosting}}
+
+{{#isNetlify}}
+**First time setup (Netlify):**
+```bash
+npm install -g netlify-cli
+netlify login
+netlify init   # from apps/web
+```
+{{/isNetlify}}
+
+{{#isCloudRun}}
+**Deploy backend (Cloud Run):**
+```bash
+gcloud auth login
+gcloud config set project $GCP_PROJECT_ID
+npm run deploy
+```
+{{/isCloudRun}}
+
+{{#isRender}}
+**Deploy backend (Render):**
+1. Go to [dashboard.render.com](https://dashboard.render.com)
+2. New → Web Service → Connect your GitHub repo
+3. Set root directory to `apps/api`
+4. Add all environment variables from `.env`
+5. Render will auto-deploy on every push to `main`
+{{/isRender}}
+
+{{#isFlyio}}
+**Deploy backend (Fly.io):**
+```bash
+# Install: https://fly.io/docs/flyctl/install/
+fly auth login
+cd apps/api
+fly launch    # creates fly.toml, one time
+fly deploy    # or just: npm run deploy from root
+```
+{{/isFlyio}}
+
+### CI/CD (GitHub Actions)
+
+The `.github/workflows/deploy.yml` file deploys automatically on every push to `main`.
+
+Add these secrets to your GitHub repository (Settings → Secrets → Actions):
+
+{{#isCloudflarePages}}
+- `CLOUDFLARE_API_TOKEN` — Cloudflare dashboard → My Profile → API Tokens → Create Token (use "Edit Cloudflare Pages" template)
+{{/isCloudflarePages}}
+{{#isVercel}}
+- `VERCEL_TOKEN` — Vercel dashboard → Settings → Tokens
+{{/isVercel}}
+{{#isFirebaseHosting}}
+- `FIREBASE_SERVICE_ACCOUNT` — Firebase console → Project settings → Service accounts → Generate key (paste the entire JSON)
+- `FIREBASE_PROJECT_ID` — Your Firebase project ID
+{{/isFirebaseHosting}}
+{{#isNetlify}}
+- `NETLIFY_AUTH_TOKEN` — Netlify dashboard → User Settings → Personal access tokens
+- `NETLIFY_SITE_ID` — Netlify dashboard → Site settings → Site ID
+{{/isNetlify}}
+{{#isCloudRun}}
+- `GCP_SA_KEY` — GCP service account JSON key with Cloud Run and Cloud Build permissions
+- `GCP_REGION` — e.g. `us-central1`
+{{/isCloudRun}}
+{{#isFlyio}}
+- `FLY_API_TOKEN` — `fly auth token`
+{{/isFlyio}}
+
+---
+
+## Project structure
+
+```
+{{projectName}}/
+├── apps/
+{{#hasWeb}}│   ├── web/              # Frontend
+│   │   ├── src/
+│   │   └── package.json
+{{/hasWeb}}
+{{#hasApi}}│   └── api/              # Backend API
+│       ├── src/          # (or main.py / main.go)
+│       ├── Dockerfile
+│       └── package.json
+{{/hasApi}}
+├── .github/workflows/    # CI/CD
+├── scripts/deploy.ts     # Deploy script
+├── .env.example          # Env var reference
+├── vibe.config.json      # Stack config
+└── package.json          # Root scripts
+```
+
+---
+
+For troubleshooting, see [TROUBLESHOOTING.md](./TROUBLESHOOTING.md).

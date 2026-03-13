@@ -1,0 +1,180 @@
+# CLAUDE.md — {{projectName}}
+
+This file gives AI assistants full context to work on this project effectively.
+
+## Stack
+
+{{#isReactVite}}**Frontend:** React 18 + Vite — `apps/web/`{{/isReactVite}}
+{{#isNextjs}}**Frontend:** Next.js 15 (app router) — `apps/web/`{{/isNextjs}}
+{{#isStaticHtml}}**Frontend:** Static HTML/CSS/JS — `apps/web/`{{/isStaticHtml}}
+{{#isHono}}**Backend:** Node.js + Hono — `apps/api/`{{/isHono}}
+{{#isFastapi}}**Backend:** Python + FastAPI — `apps/api/`{{/isFastapi}}
+{{#isGo}}**Backend:** Go — `apps/api/`{{/isGo}}
+{{#hasNeon}}**Database:** PostgreSQL via Neon (serverless) — `DATABASE_URL` env var{{/hasNeon}}
+{{#hasFirestore}}**Database:** Firestore (Google NoSQL) — service account credentials in env{{/hasFirestore}}
+{{#hasUpstashRedis}}**Database:** Redis via Upstash (serverless) — `UPSTASH_REDIS_REST_*` env vars{{/hasUpstashRedis}}
+{{#hasClerk}}**Auth:** Clerk — components from `@clerk/{{#isNextjs}}nextjs{{/isNextjs}}{{^isNextjs}}react{{/isNextjs}}`{{/hasClerk}}
+{{#hasFirebaseAuth}}**Auth:** Firebase Auth — `firebase` package{{/hasFirebaseAuth}}
+{{#hasSupabaseAuth}}**Auth:** Supabase Auth — `@supabase/supabase-js`{{/hasSupabaseAuth}}
+{{#hasR2}}**Storage:** Cloudflare R2 — S3-compatible, `R2_*` env vars{{/hasR2}}
+{{#hasResend}}**Email:** Resend — `resend` package, `RESEND_API_KEY` env var{{/hasResend}}
+{{#hasStripe}}**Payments:** Stripe — checkout + webhooks at `/api/webhooks/stripe`{{/hasStripe}}
+{{#hasLlmApi}}**AI:** Anthropic Claude — `@anthropic-ai/sdk`, `ANTHROPIC_API_KEY` env var{{/hasLlmApi}}
+{{#hasVectorRag}}**AI:** Claude + Pinecone RAG — `@anthropic-ai/sdk` + `@pinecone-database/pinecone`{{/hasVectorRag}}
+{{#isCloudflarePages}}**Frontend Deploy:** Cloudflare Pages{{/isCloudflarePages}}
+{{#isVercel}}**Frontend Deploy:** Vercel{{/isVercel}}
+{{#isFirebaseHosting}}**Frontend Deploy:** Firebase Hosting{{/isFirebaseHosting}}
+{{#isNetlify}}**Frontend Deploy:** Netlify{{/isNetlify}}
+{{#isCloudRun}}**Backend Deploy:** Google Cloud Run{{/isCloudRun}}
+{{#isRender}}**Backend Deploy:** Render{{/isRender}}
+{{#isFlyio}}**Backend Deploy:** Fly.io{{/isFlyio}}
+
+---
+
+## Project structure
+
+```
+{{projectName}}/
+├── apps/
+{{#hasWeb}}│   ├── web/
+│   │   ├── src/
+{{#isReactVite}}│   │   │   ├── App.tsx       Main app component
+│   │   │   └── main.tsx      Entry point
+│   │   └── vite.config.ts    /api proxy → localhost:8080{{/isReactVite}}
+{{#isNextjs}}│   │   └── src/app/
+│   │   │   ├── layout.tsx    Root layout{{#hasClerk}} (ClerkProvider){{/hasClerk}}
+│   │   │   └── page.tsx      Home page{{/isNextjs}}
+{{/hasWeb}}
+{{#hasApi}}│   └── api/
+{{#isHono}}│       ├── src/index.ts    Routes, middleware, service clients
+│       ├── Dockerfile      Multi-stage production build
+│       └── tsconfig.json{{/isHono}}
+{{#isFastapi}}│       ├── main.py         FastAPI app, routes, service clients
+│       ├── requirements.txt
+│       └── Dockerfile{{/isFastapi}}
+{{#isGo}}│       ├── cmd/api/main.go  HTTP server, handlers, middleware
+│       ├── go.mod
+│       └── Dockerfile{{/isGo}}
+{{/hasApi}}
+├── .github/workflows/
+│   └── deploy.yml          CI/CD — auto-deploys on push to main
+├── scripts/
+│   └── deploy.ts           npm run deploy entrypoint
+├── .env.example            All env vars with descriptions
+├── vibe.config.json        Stack choices (read by deploy script)
+└── package.json            Root: workspaces, dev/deploy scripts
+```
+
+---
+
+## Key commands
+
+```bash
+npm run dev          # Start everything locally
+npm run dev:web      # Frontend only (port 3000)
+{{#hasApi}}npm run dev:api      # Backend only (port 8080){{/hasApi}}
+npm run build:web    # Production build
+npm run deploy       # Deploy to configured platforms
+```
+
+{{#hasApi}}
+## API endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/health` | Health check |
+{{#hasNeon}}| GET | `/api/items` | Example Neon DB query |{{/hasNeon}}
+{{#hasStripe}}| POST | `/api/checkout` | Create Stripe checkout session |
+| POST | `/api/webhooks/stripe` | Stripe webhook receiver |{{/hasStripe}}
+{{#hasLlmApi}}| POST | `/api/chat` | Chat with Claude |{{/hasLlmApi}}
+
+{{/hasApi}}
+
+## Environment variables
+
+All variables are documented in `.env.example`. Load order:
+- Local dev: `.env` file (loaded automatically by the framework)
+- Production: set on your hosting platform (see README.md)
+
+{{#hasNeon}}
+**`DATABASE_URL`** — Neon PostgreSQL connection string. Must include `?sslmode=require`.
+{{/hasNeon}}
+{{#hasClerk}}
+**`NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`** / **`CLERK_SECRET_KEY`** — from Clerk dashboard.
+{{/hasClerk}}
+{{#hasStripe}}
+**`STRIPE_WEBHOOK_SECRET`** — different for local dev (from Stripe CLI) vs production (from Stripe dashboard).
+{{/hasStripe}}
+{{#hasLlmApi}}
+**`ANTHROPIC_API_KEY`** — from [console.anthropic.com](https://console.anthropic.com).
+{{/hasLlmApi}}
+
+---
+
+## How to add a new API route
+
+{{#isHono}}
+In `apps/api/src/index.ts`:
+```ts
+app.get('/api/your-route', async (c) => {
+  return c.json({ data: 'your response' });
+});
+```
+{{/isHono}}
+{{#isFastapi}}
+In `apps/api/main.py`:
+```python
+@app.get("/api/your-route")
+def your_route():
+    return {"data": "your response"}
+```
+{{/isFastapi}}
+{{#isGo}}
+In `apps/api/cmd/api/main.go`, add to `main()`:
+```go
+mux.HandleFunc("GET /api/your-route", func(w http.ResponseWriter, r *http.Request) {
+    writeJSON(w, http.StatusOK, map[string]string{"data": "your response"})
+})
+```
+{{/isGo}}
+
+{{#isReactVite}}
+The frontend proxies `/api/*` to `http://localhost:8080` via `vite.config.ts`. So `fetch('/api/your-route')` works in development without CORS issues.
+{{/isReactVite}}
+
+---
+
+## How `npm run deploy` works
+
+1. Reads `vibe.config.json` to determine deployment targets
+2. Runs `npm run build:web` (if frontend exists)
+3. Deploys frontend to {{#isCloudflarePages}}Cloudflare Pages via `wrangler`{{/isCloudflarePages}}{{#isVercel}}Vercel via `vercel --prod`{{/isVercel}}{{#isFirebaseHosting}}Firebase via `firebase deploy`{{/isFirebaseHosting}}{{#isNetlify}}Netlify via `netlify-cli`{{/isNetlify}}
+{{#hasApi}}4. Deploys backend to {{#isCloudRun}}Cloud Run via `gcloud run deploy`{{/isCloudRun}}{{#isRender}}Render (auto via git push){{/isRender}}{{#isFlyio}}Fly.io via `flyctl deploy`{{/isFlyio}}{{/hasApi}}
+
+For CI/CD, GitHub Actions runs the same steps automatically on push to `main` using stored secrets.
+
+---
+
+## Common mistakes to avoid
+
+{{#isReactVite}}
+- Don't add `.env` variables without the `VITE_` prefix if you need them in the browser — Vite only exposes `VITE_*` vars to the client bundle
+{{/isReactVite}}
+{{#isNextjs}}
+- Server components can't use hooks or browser APIs — add `'use client'` directive when needed
+- Don't import server-only code in client components
+{{/isNextjs}}
+{{#hasClerk}}
+- Never expose `CLERK_SECRET_KEY` to the browser — it's server-side only
+{{/hasClerk}}
+{{#hasStripe}}
+- Never expose `STRIPE_SECRET_KEY` to the browser — use the publishable key on the client
+- Always verify webhook signatures before processing events
+{{/hasStripe}}
+{{#hasNeon}}
+- Don't create a new `neon()` connection on every request — initialize it once at module level
+{{/hasNeon}}
+{{#isCloudRun}}
+- Cloud Run sets the `PORT` env var — always use `process.env.PORT ?? 8080`, never hardcode the port
+- The container must start and be ready within 240 seconds or Cloud Run marks the deployment as failed
+{{/isCloudRun}}
