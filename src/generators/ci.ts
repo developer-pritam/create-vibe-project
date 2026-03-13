@@ -3,7 +3,7 @@ import { fileURLToPath } from 'url';
 import type { ScaffoldContext } from '../types.js';
 import { processTemplate } from '../utils/fs.js';
 
-const TEMPLATES_DIR = fileURLToPath(new URL('../../templates', import.meta.url));
+const TEMPLATES_DIR = fileURLToPath(new URL('../templates', import.meta.url));
 
 export async function generateCI(ctx: ScaffoldContext, targetDir: string): Promise<void> {
   const src = join(TEMPLATES_DIR, 'shared', 'deploy.yml.mustache');

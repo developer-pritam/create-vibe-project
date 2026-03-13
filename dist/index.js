@@ -485,7 +485,7 @@ npm-debug.log*
 // src/generators/web.ts
 import { join as join3 } from "path";
 import { fileURLToPath } from "url";
-var TEMPLATES_DIR = fileURLToPath(new URL("../../templates", import.meta.url));
+var TEMPLATES_DIR = fileURLToPath(new URL("../templates", import.meta.url));
 async function generateWeb(ctx, targetDir) {
   const webDir = join3(targetDir, "apps", "web");
   const frontend = ctx.answers.frontend;
@@ -508,7 +508,7 @@ async function generateWeb(ctx, targetDir) {
 // src/generators/api.ts
 import { join as join4 } from "path";
 import { fileURLToPath as fileURLToPath2 } from "url";
-var TEMPLATES_DIR2 = fileURLToPath2(new URL("../../templates", import.meta.url));
+var TEMPLATES_DIR2 = fileURLToPath2(new URL("../templates", import.meta.url));
 async function generateApi(ctx, targetDir) {
   const apiDir = join4(targetDir, "apps", "api");
   const backend = ctx.answers.backend;
@@ -531,7 +531,7 @@ async function generateApi(ctx, targetDir) {
 // src/generators/ci.ts
 import { join as join5 } from "path";
 import { fileURLToPath as fileURLToPath3 } from "url";
-var TEMPLATES_DIR3 = fileURLToPath3(new URL("../../templates", import.meta.url));
+var TEMPLATES_DIR3 = fileURLToPath3(new URL("../templates", import.meta.url));
 async function generateCI(ctx, targetDir) {
   const src = join5(TEMPLATES_DIR3, "shared", "deploy.yml.mustache");
   const dest = join5(targetDir, ".github", "workflows", "deploy.yml");
