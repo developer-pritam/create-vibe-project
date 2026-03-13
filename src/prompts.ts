@@ -12,12 +12,12 @@ async function quickStart(): Promise<UserAnswers> {
   });
   if (p.isCancel(projectName)) { p.cancel('Cancelled.'); process.exit(0); }
 
-  const needsBackend = await p.confirm({ message: 'Do you need a backend API?' });
+  const needsBackend = await p.confirm({ message: 'Does your app need a server? (logins, saving data, sending emails...)' });
   if (p.isCancel(needsBackend)) { p.cancel('Cancelled.'); process.exit(0); }
 
   let needsDatabase = false;
   if (needsBackend) {
-    const db = await p.confirm({ message: 'Do you need a database?' });
+    const db = await p.confirm({ message: 'Do you need to save data? (user profiles, posts, orders...)' });
     if (p.isCancel(db)) { p.cancel('Cancelled.'); process.exit(0); }
     needsDatabase = db as boolean;
   }
@@ -28,13 +28,13 @@ async function quickStart(): Promise<UserAnswers> {
 
   p.note(
     [
-      `Frontend  → React + Vite  (deploy: Cloudflare Pages)`,
-      needsBackend ? `Backend   → Node.js / Hono  (deploy: Render)` : '',
+      `Website   → React + Vite  (hosted on Cloudflare Pages)`,
+      needsBackend ? `Server    → Node.js / Hono  (hosted on Render)` : '',
       needsDatabase ? `Database  → MongoDB Atlas` : '',
     ]
       .filter(Boolean)
       .join('\n'),
-    'Quick start stack'
+    'Your stack'
   );
 
   return {
@@ -83,35 +83,35 @@ export async function collectAnswers(): Promise<UserAnswers> {
 
       frontend: () =>
         p.select({
-          message: 'Frontend',
+          message: 'What should your app look like?',
           options: [
-            { value: 'react-vite', label: 'React + Vite', hint: 'recommended' },
-            { value: 'nextjs', label: 'Next.js', hint: 'SSR / full-stack' },
-            { value: 'static-html', label: 'Static HTML/CSS/JS', hint: 'no framework' },
-            { value: 'none', label: 'None', hint: 'API only' },
+            { value: 'react-vite', label: 'React + Vite', hint: 'modern interactive website — recommended' },
+            { value: 'nextjs', label: 'Next.js', hint: 'great for SEO, blogs, and content-heavy sites' },
+            { value: 'static-html', label: 'Static HTML/CSS/JS', hint: 'simple pages, no framework needed' },
+            { value: 'none', label: 'No website', hint: 'server only — no frontend' },
           ],
         }),
 
       backend: () =>
         p.select({
-          message: 'Backend API',
+          message: 'Does your app need a server?',
           options: [
-            { value: 'none', label: 'None', hint: 'frontend only' },
-            { value: 'hono', label: 'Node.js — Hono', hint: 'fast, lightweight, TypeScript' },
-            { value: 'fastapi', label: 'Python — FastAPI', hint: 'async, great for AI/ML' },
-            { value: 'go', label: 'Go — net/http', hint: 'high performance' },
+            { value: 'none', label: 'No', hint: 'website only, no server' },
+            { value: 'hono', label: 'Yes — Node.js (Hono)', hint: 'JavaScript/TypeScript, fast and lightweight' },
+            { value: 'fastapi', label: 'Yes — Python (FastAPI)', hint: 'Python, great for AI apps' },
+            { value: 'go', label: 'Yes — Go', hint: 'very fast, minimal resource usage' },
           ],
         }),
 
       database: () =>
         p.select({
-          message: 'Database',
+          message: 'Do you need to save data?',
           options: [
-            { value: 'none', label: 'None' },
-            { value: 'neon', label: 'PostgreSQL — Neon', hint: 'serverless postgres, free tier' },
-            { value: 'mongodb', label: 'MongoDB Atlas', hint: 'NoSQL, free tier, paste your connection URL' },
-            { value: 'firestore', label: 'Firestore', hint: 'NoSQL, Google, free tier' },
-            { value: 'upstash-redis', label: 'Redis — Upstash', hint: 'serverless redis, free tier' },
+            { value: 'none', label: 'No' },
+            { value: 'neon', label: 'Yes — Neon (PostgreSQL)', hint: 'tables and rows, like a spreadsheet — free tier' },
+            { value: 'mongodb', label: 'Yes — MongoDB Atlas', hint: 'flexible storage, like JSON files — free tier' },
+            { value: 'firestore', label: 'Yes — Firestore', hint: "Google's database, real-time sync — free tier" },
+            { value: 'upstash-redis', label: 'Yes — Upstash Redis', hint: 'super fast cache and temporary data — free tier' },
           ],
         }),
 
@@ -130,70 +130,70 @@ export async function collectAnswers(): Promise<UserAnswers> {
 
       auth: () =>
         p.select({
-          message: 'Authentication',
+          message: 'Do users need to log in?',
           options: [
-            { value: 'none', label: 'None' },
-            { value: 'clerk', label: 'Clerk', hint: 'easiest DX, free tier' },
-            { value: 'firebase-auth', label: 'Firebase Auth', hint: 'Google, generous free tier' },
-            { value: 'supabase-auth', label: 'Supabase Auth', hint: 'open source, free tier' },
+            { value: 'none', label: 'No login needed' },
+            { value: 'clerk', label: 'Yes — Clerk', hint: 'easiest setup, Google + email + GitHub — free tier' },
+            { value: 'firebase-auth', label: 'Yes — Firebase Auth', hint: "Google's login system — free tier" },
+            { value: 'supabase-auth', label: 'Yes — Supabase Auth', hint: 'open source login — free tier' },
           ],
         }),
 
       storage: () =>
         p.select({
-          message: 'File Storage',
+          message: 'Do you need to store files? (images, PDFs, videos...)',
           options: [
-            { value: 'none', label: 'None' },
-            { value: 'r2', label: 'Cloudflare R2', hint: 'free egress, S3-compatible' },
-            { value: 'firebase-storage', label: 'Firebase Storage', hint: 'easy, free tier' },
+            { value: 'none', label: 'No' },
+            { value: 'r2', label: 'Yes — Cloudflare R2', hint: 'fast global CDN, free uploads and downloads' },
+            { value: 'firebase-storage', label: 'Yes — Firebase Storage', hint: "Google's file storage — free tier" },
           ],
         }),
 
       jobs: () =>
         p.select({
-          message: 'Background Jobs / Scheduled Tasks',
+          message: 'Do you need tasks that run in the background or on a schedule?',
           options: [
-            { value: 'none', label: 'None' },
-            { value: 'cloud-scheduler', label: 'Cloud Scheduler → Cloud Run', hint: 'cron jobs, GCP' },
-            { value: 'bullmq-upstash', label: 'BullMQ + Upstash Redis', hint: 'job queues, free tier' },
+            { value: 'none', label: 'No' },
+            { value: 'cloud-scheduler', label: 'Yes — scheduled tasks (GCP)', hint: 'run code at set times, like a cron job' },
+            { value: 'bullmq-upstash', label: 'Yes — background job queue', hint: 'process tasks without making users wait' },
           ],
         }),
 
       realtime: () =>
         p.select({
-          message: 'Real-time Features',
+          message: 'Do you need live updates without refreshing the page?',
           options: [
-            { value: 'none', label: 'None' },
-            { value: 'websockets', label: 'WebSockets', hint: 'Socket.io on backend' },
-            { value: 'supabase-realtime', label: 'Supabase Realtime', hint: 'managed, free tier' },
+            { value: 'none', label: 'No' },
+            { value: 'websockets', label: 'Yes — WebSockets', hint: 'live chat, notifications, multiplayer' },
+            { value: 'supabase-realtime', label: 'Yes — Supabase Realtime', hint: 'database changes pushed instantly to users' },
           ],
         }),
 
       ai: () =>
         p.select({
-          message: 'AI / LLM',
+          message: 'Do you want to add AI features?',
           options: [
-            { value: 'none', label: 'None' },
-            { value: 'llm-api', label: 'LLM API calls', hint: 'Anthropic Claude / OpenAI' },
-            { value: 'vector-rag', label: 'Vector Search / RAG', hint: 'Claude + Pinecone embeddings' },
+            { value: 'none', label: 'No' },
+            { value: 'llm-api', label: 'Yes — AI chat / text generation', hint: 'Claude or OpenAI wired and ready to use' },
+            { value: 'vector-rag', label: 'Yes — AI search over your own content', hint: 'ask questions about your own documents' },
           ],
         }),
 
       email: () =>
         p.select({
-          message: 'Email',
+          message: 'Do you need to send emails? (welcome, password reset...)',
           options: [
-            { value: 'none', label: 'None' },
-            { value: 'resend', label: 'Resend', hint: 'best DX, free tier (3k/month)' },
+            { value: 'none', label: 'No' },
+            { value: 'resend', label: 'Yes — Resend', hint: '3,000 emails/month free, great developer experience' },
           ],
         }),
 
       payments: () =>
         p.select({
-          message: 'Payments',
+          message: 'Do you need to accept payments?',
           options: [
-            { value: 'none', label: 'None' },
-            { value: 'stripe', label: 'Stripe', hint: 'checkout + webhooks pre-configured' },
+            { value: 'none', label: 'No' },
+            { value: 'stripe', label: 'Yes — Stripe', hint: 'checkout + webhook handler pre-wired' },
           ],
         }),
 
@@ -201,12 +201,12 @@ export async function collectAnswers(): Promise<UserAnswers> {
         results.frontend === 'none'
           ? (Promise.resolve('cloudflare-pages') as Promise<'cloudflare-pages'>)
           : p.select({
-              message: 'Deploy frontend to',
+              message: 'Where should your website be hosted?',
               options: [
-                { value: 'cloudflare-pages', label: 'Cloudflare Pages', hint: 'fast, free, global edge' },
+                { value: 'cloudflare-pages', label: 'Cloudflare Pages', hint: 'fast, free, works everywhere — recommended' },
                 { value: 'vercel', label: 'Vercel', hint: 'great for Next.js, free tier' },
-                { value: 'firebase-hosting', label: 'Firebase Hosting', hint: 'Google CDN, free tier' },
-                { value: 'netlify', label: 'Netlify', hint: 'simple, free tier' },
+                { value: 'firebase-hosting', label: 'Firebase Hosting', hint: "Google's CDN, free tier" },
+                { value: 'netlify', label: 'Netlify', hint: 'simple setup, free tier' },
               ],
             }),
 
@@ -214,11 +214,11 @@ export async function collectAnswers(): Promise<UserAnswers> {
         results.backend === 'none'
           ? (Promise.resolve(null) as Promise<null>)
           : p.select({
-              message: 'Deploy backend to',
+              message: 'Where should your server be hosted?',
               options: [
-                { value: 'cloud-run', label: 'Google Cloud Run', hint: 'scales to zero, pay-per-use' },
-                { value: 'render', label: 'Render', hint: 'simple, free tier (sleeps on inactivity)' },
-                { value: 'flyio', label: 'Fly.io', hint: 'global, generous free tier' },
+                { value: 'cloud-run', label: 'Google Cloud Run', hint: 'pay only when used, scales automatically' },
+                { value: 'render', label: 'Render', hint: 'simple setup, free tier (sleeps after 15min idle)' },
+                { value: 'flyio', label: 'Fly.io', hint: 'global servers, generous free tier' },
               ],
             }),
     },

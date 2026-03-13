@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>create-vibe-project — Scaffold full-stack apps in 60 seconds</title>
-  <meta name="description" content="Answer 13 questions. Get a full-stack project with npm run dev and npm run deploy already wired. React, Next.js, Hono, FastAPI, Neon, MongoDB, Clerk, Stripe and more." />
+  <title>create-vibe-project — Build and launch your app in minutes</title>
+  <meta name="description" content="Answer a few plain-English questions. Get a complete project with npm run dev and npm run deploy already wired — no config files, no tutorials." />
   <meta property="og:title" content="create-vibe-project" />
   <meta property="og:description" content="Scaffold full-stack apps in 60 seconds. npm run dev + npm run deploy pre-configured." />
   <meta property="og:type" content="website" />
@@ -384,9 +384,9 @@
 <!-- ── Hero ────────────────────────────────────────────────────────── -->
 <section id="hero">
   <div class="hero-glow"></div>
-  <div class="hero-badge">Open source CLI tool</div>
-  <h1>Scaffold your full-stack app<br/><span class="accent">in 60 seconds</span></h1>
-  <p class="hero-sub">Answer 13 questions. Get a complete project with <code>npm run dev</code> and <code>npm run deploy</code> already wired — React, Next.js, Hono, FastAPI, MongoDB, Stripe and more.</p>
+  <div class="hero-badge">Free & open source</div>
+  <h1>Go from idea to running app<br/><span class="accent">in 60 seconds</span></h1>
+  <p class="hero-sub">Answer a few plain-English questions about what your app needs. Get a complete project that starts locally and deploys to the cloud — no setup tutorials, no copy-pasting config.</p>
 
   <div class="hero-cmd">
     <span class="hero-cmd-text">npx create-vibe-project</span>
@@ -394,10 +394,10 @@
   </div>
 
   <div class="hero-stats">
-    <span><strong>13</strong> questions</span>
-    <span><strong>4</strong> frontends</span>
-    <span><strong>4</strong> backends</span>
-    <span><strong>6</strong> deploy targets</span>
+    <span><strong>Quick start</strong> or full custom</span>
+    <span><strong>4</strong> frontend options</span>
+    <span><strong>4</strong> server options</span>
+    <span><strong>6</strong> hosting targets</span>
   </div>
 
   <div class="terminal-wrap">
@@ -411,16 +411,15 @@
       <div class="term-body">
         <div class="term-line"><span class="t-prompt">$</span><span class="t-cmd">npx create-vibe-project</span></div>
         <div class="term-line"><span class="t-dim">┌ create-vibe-project — scaffold and deploy in minutes</span></div>
+        <div class="term-line"><span class="t-q">◆ How do you want to set up your project?</span></div>
+        <div class="term-line"><span class="t-dim">│ </span><span class="t-v">Quick start</span></div>
         <div class="term-line"><span class="t-q">◆ Project name</span></div>
         <div class="term-line"><span class="t-dim">│ </span><span class="t-v">my-app</span></div>
-        <div class="term-line"><span class="t-q">◆ Frontend</span></div>
-        <div class="term-line"><span class="t-dim">│ </span><span class="t-v">React + Vite</span></div>
-        <div class="term-line"><span class="t-q">◆ Backend API</span></div>
-        <div class="term-line"><span class="t-dim">│ </span><span class="t-v">Node.js — Hono</span></div>
-        <div class="term-line"><span class="t-q">◆ Database</span></div>
-        <div class="term-line"><span class="t-dim">│ </span><span class="t-v">MongoDB Atlas</span></div>
-        <div class="term-line"><span class="t-dim">│ ...</span></div>
-        <div class="term-line"><span class="t-success">◇ Project scaffolded!</span></div>
+        <div class="term-line"><span class="t-q">◆ Does your app need a server?</span></div>
+        <div class="term-line"><span class="t-dim">│ </span><span class="t-v">Yes</span></div>
+        <div class="term-line"><span class="t-q">◆ Do you need to save data?</span></div>
+        <div class="term-line"><span class="t-dim">│ </span><span class="t-v">Yes</span></div>
+        <div class="term-line"><span class="t-success">◇ Project created!</span></div>
         <div class="term-line"><span class="t-dim">└ Happy shipping! 🚀</span> <span class="cursor"></span></div>
       </div>
     </div>
@@ -433,24 +432,24 @@
 <section id="how-it-works">
   <div class="container">
     <span class="section-label">Simple by design</span>
-    <h2>Three steps to a working project</h2>
-    <p class="section-sub">No config files to copy-paste. No tutorials to follow. Just answer questions and start building.</p>
+    <h2>Three steps to a working app</h2>
+    <p class="section-sub">No config files to copy-paste. No tutorials to follow. Answer a few questions in plain English and you're ready to build.</p>
     <div class="steps">
       <div class="step-card">
         <div class="step-num">1</div>
         <h3>Run one command</h3>
-        <p>No global install needed. npx downloads and runs the latest version automatically.</p>
+        <p>Nothing to install globally. One command and it walks you through everything.</p>
         <code class="step-code">npx create-vibe-project</code>
       </div>
       <div class="step-card">
         <div class="step-num">2</div>
-        <h3>Answer 13 questions</h3>
-        <p>Frontend, backend, database, auth, storage, AI, payments, deploy targets — all in one interactive flow.</p>
+        <h3>Answer plain-English questions</h3>
+        <p>Do you need a server? Do you need to save data? Do users need to log in? No jargon required — pick what fits your app.</p>
       </div>
       <div class="step-card">
         <div class="step-num">3</div>
         <h3>Start building</h3>
-        <p>Install deps, fill in .env, and you're live locally. One more command to deploy to production.</p>
+        <p>Add your API keys to <code>.env</code>, then run dev to see it live. One more command pushes it to the internet.</p>
         <code class="step-code">npm install && npm run dev</code>
       </div>
     </div>
@@ -463,75 +462,75 @@
 <section id="stack">
   <div class="container">
     <span class="section-label">Every choice pre-wired</span>
-    <h2>Pick your stack</h2>
-    <p class="section-sub">Imports, boilerplate, and config are generated automatically based on your selections.</p>
+    <h2>Pick what your app needs</h2>
+    <p class="section-sub">All the wiring, imports, and config are generated automatically. You just fill in your API keys.</p>
 
     <div class="tabs-wrap">
       <div class="tab-buttons">
-        <button class="tab-btn active" onclick="switchTab('frontend', this)">Frontend</button>
-        <button class="tab-btn" onclick="switchTab('backend', this)">Backend</button>
+        <button class="tab-btn active" onclick="switchTab('frontend', this)">Website</button>
+        <button class="tab-btn" onclick="switchTab('backend', this)">Server</button>
         <button class="tab-btn" onclick="switchTab('database', this)">Database</button>
-        <button class="tab-btn" onclick="switchTab('auth', this)">Auth</button>
-        <button class="tab-btn" onclick="switchTab('storage', this)">Storage</button>
-        <button class="tab-btn" onclick="switchTab('jobs', this)">Jobs</button>
-        <button class="tab-btn" onclick="switchTab('ai', this)">AI</button>
-        <button class="tab-btn" onclick="switchTab('deploy', this)">Deploy</button>
+        <button class="tab-btn" onclick="switchTab('auth', this)">Login</button>
+        <button class="tab-btn" onclick="switchTab('storage', this)">File Storage</button>
+        <button class="tab-btn" onclick="switchTab('jobs', this)">Background Tasks</button>
+        <button class="tab-btn" onclick="switchTab('ai', this)">AI Features</button>
+        <button class="tab-btn" onclick="switchTab('deploy', this)">Hosting</button>
       </div>
 
       <div id="tab-frontend" class="tab-panel active">
-        <div class="option-card"><div class="option-icon">⚛</div><h4>React + Vite</h4><p>Fast HMR, TypeScript, auto-proxies /api to backend</p><span class="tag">recommended</span></div>
-        <div class="option-card"><div class="option-icon">▲</div><h4>Next.js</h4><p>SSR, app router, great for SEO-heavy or full-stack apps</p></div>
-        <div class="option-card"><div class="option-icon">☰</div><h4>Static HTML</h4><p>Plain HTML/CSS/JS, no framework, served with npx serve</p></div>
-        <div class="option-card"><div class="option-icon">○</div><h4>None</h4><p>API only — no frontend scaffolded</p></div>
+        <div class="option-card"><div class="option-icon">⚛</div><h4>React + Vite</h4><p>Modern interactive website — fast, TypeScript, connects to your server automatically</p><span class="tag">recommended</span></div>
+        <div class="option-card"><div class="option-icon">▲</div><h4>Next.js</h4><p>Great for SEO, blogs, and content-heavy sites. Renders pages on the server</p></div>
+        <div class="option-card"><div class="option-icon">☰</div><h4>Static HTML</h4><p>Plain HTML, CSS, and JavaScript — no framework, no build step</p></div>
+        <div class="option-card"><div class="option-icon">○</div><h4>Server only</h4><p>No website — just a server (API). Useful if you're building a mobile app backend</p></div>
       </div>
 
       <div id="tab-backend" class="tab-panel">
-        <div class="option-card"><div class="option-icon">⬡</div><h4>Hono (Node.js)</h4><p>Lightweight, TypeScript, ultra-fast. CORS + logger pre-configured</p><span class="tag">recommended</span></div>
-        <div class="option-card"><div class="option-icon">🐍</div><h4>FastAPI (Python)</h4><p>Async, great for AI/ML workloads, auto OpenAPI docs</p></div>
-        <div class="option-card"><div class="option-icon">Go</div><h4>Go</h4><p>Standard library, high performance, minimal footprint</p></div>
-        <div class="option-card"><div class="option-icon">○</div><h4>None</h4><p>Frontend only — no backend scaffolded</p></div>
+        <div class="option-card"><div class="option-icon">⬡</div><h4>Hono (Node.js)</h4><p>JavaScript/TypeScript server — fast, lightweight, easy to extend</p><span class="tag">recommended</span></div>
+        <div class="option-card"><div class="option-icon">🐍</div><h4>FastAPI (Python)</h4><p>Python server — ideal if you're using AI/ML libraries like PyTorch or scikit-learn</p></div>
+        <div class="option-card"><div class="option-icon">Go</div><h4>Go</h4><p>Very fast server with tiny memory usage — great for high-traffic apps</p></div>
+        <div class="option-card"><div class="option-icon">○</div><h4>Website only</h4><p>No server — just a static website that runs entirely in the browser</p></div>
       </div>
 
       <div id="tab-database" class="tab-panel">
-        <div class="option-card"><div class="option-icon">🐘</div><h4>Neon (PostgreSQL)</h4><p>Serverless Postgres, free tier, scales to zero</p><span class="tag">free tier</span></div>
-        <div class="option-card"><div class="option-icon">🍃</div><h4>MongoDB Atlas</h4><p>NoSQL, paste your connection URL, free 512MB cluster</p><span class="tag">free tier</span></div>
-        <div class="option-card"><div class="option-icon">🔥</div><h4>Firestore</h4><p>Google NoSQL, real-time, generous free tier</p><span class="tag">free tier</span></div>
-        <div class="option-card"><div class="option-icon">⚡</div><h4>Upstash Redis</h4><p>Serverless Redis, great for caching and queues</p><span class="tag">free tier</span></div>
+        <div class="option-card"><div class="option-icon">🐘</div><h4>Neon (PostgreSQL)</h4><p>Structured storage — like a spreadsheet with rows and columns. Great for relational data</p><span class="tag">free tier</span></div>
+        <div class="option-card"><div class="option-icon">🍃</div><h4>MongoDB Atlas</h4><p>Flexible storage — save data as-is without defining a rigid structure upfront</p><span class="tag">free tier</span></div>
+        <div class="option-card"><div class="option-icon">🔥</div><h4>Firestore</h4><p>Google's database — real-time sync, great for apps that need live data updates</p><span class="tag">free tier</span></div>
+        <div class="option-card"><div class="option-icon">⚡</div><h4>Upstash Redis</h4><p>Lightning-fast temporary storage — great for caching, sessions, and rate limiting</p><span class="tag">free tier</span></div>
       </div>
 
       <div id="tab-auth" class="tab-panel">
-        <div class="option-card"><div class="option-icon">🔐</div><h4>Clerk</h4><p>Pre-built UI components, 10k MAU free, easiest setup</p><span class="tag">free tier</span></div>
-        <div class="option-card"><div class="option-icon">🔥</div><h4>Firebase Auth</h4><p>Email, Google, GitHub login. Generous free tier</p><span class="tag">free tier</span></div>
-        <div class="option-card"><div class="option-icon">⚡</div><h4>Supabase Auth</h4><p>Open source, works great with Supabase DB</p><span class="tag">free tier</span></div>
-        <div class="option-card"><div class="option-icon">○</div><h4>None</h4><p>No auth — implement your own or add it later</p></div>
+        <div class="option-card"><div class="option-icon">🔐</div><h4>Clerk</h4><p>Ready-made login screens — Google, email, GitHub. Drop in and it just works</p><span class="tag">free tier</span></div>
+        <div class="option-card"><div class="option-icon">🔥</div><h4>Firebase Auth</h4><p>Google's login system — email, Google, and social providers out of the box</p><span class="tag">free tier</span></div>
+        <div class="option-card"><div class="option-icon">⚡</div><h4>Supabase Auth</h4><p>Open source login — integrates well with Supabase's database and storage</p><span class="tag">free tier</span></div>
+        <div class="option-card"><div class="option-icon">○</div><h4>No login</h4><p>Skip authentication — add it later or handle it yourself</p></div>
       </div>
 
       <div id="tab-storage" class="tab-panel">
-        <div class="option-card"><div class="option-icon">☁</div><h4>Cloudflare R2</h4><p>S3-compatible, zero egress fees, global CDN</p><span class="tag">free tier</span></div>
-        <div class="option-card"><div class="option-icon">🔥</div><h4>Firebase Storage</h4><p>Simple SDK, integrates with Firebase Auth</p><span class="tag">free tier</span></div>
-        <div class="option-card"><div class="option-icon">○</div><h4>None</h4><p>No file storage</p></div>
+        <div class="option-card"><div class="option-icon">☁</div><h4>Cloudflare R2</h4><p>Upload and serve files globally — images, PDFs, videos. No download fees</p><span class="tag">free tier</span></div>
+        <div class="option-card"><div class="option-icon">🔥</div><h4>Firebase Storage</h4><p>Google's file storage — simple SDK, good if you're already using Firebase</p><span class="tag">free tier</span></div>
+        <div class="option-card"><div class="option-icon">○</div><h4>No file storage</h4><p>Skip file uploads — your app won't need to store files</p></div>
       </div>
 
       <div id="tab-jobs" class="tab-panel">
-        <div class="option-card"><div class="option-icon">⏰</div><h4>Cloud Scheduler</h4><p>GCP cron jobs that trigger Cloud Run — scheduled tasks</p></div>
-        <div class="option-card"><div class="option-icon">📬</div><h4>BullMQ + Upstash</h4><p>Job queues backed by Upstash Redis, free tier</p><span class="tag">free tier</span></div>
-        <div class="option-card"><div class="option-icon">○</div><h4>None</h4><p>No background jobs</p></div>
+        <div class="option-card"><div class="option-icon">⏰</div><h4>Scheduled Tasks (GCP)</h4><p>Run code automatically at set times — like a daily report or weekly email digest</p></div>
+        <div class="option-card"><div class="option-icon">📬</div><h4>Background Job Queue</h4><p>Process slow tasks in the background so users don't have to wait — like sending emails or resizing images</p><span class="tag">free tier</span></div>
+        <div class="option-card"><div class="option-icon">○</div><h4>None</h4><p>No background processing needed</p></div>
       </div>
 
       <div id="tab-ai" class="tab-panel">
-        <div class="option-card"><div class="option-icon">✦</div><h4>LLM API</h4><p>Anthropic Claude SDK wired, POST /api/chat ready to use</p></div>
-        <div class="option-card"><div class="option-icon">🔍</div><h4>Vector / RAG</h4><p>Claude + Pinecone embeddings and vector search pipeline</p></div>
-        <div class="option-card"><div class="option-icon">○</div><h4>None</h4><p>No AI features</p></div>
+        <div class="option-card"><div class="option-icon">✦</div><h4>AI Chat / Text Generation</h4><p>Add a chat interface or text generation to your app — Claude or OpenAI, pre-wired and ready</p></div>
+        <div class="option-card"><div class="option-icon">🔍</div><h4>AI Search Over Your Content</h4><p>Let users ask questions about your own documents, knowledge base, or data using AI</p></div>
+        <div class="option-card"><div class="option-icon">○</div><h4>No AI</h4><p>No AI features — you can always add them later</p></div>
       </div>
 
       <div id="tab-deploy" class="tab-panel">
-        <div class="option-card"><div class="option-icon">☁</div><h4>Cloudflare Pages</h4><p>Global edge, unlimited bandwidth, fast deploys</p><span class="tag">free tier</span></div>
-        <div class="option-card"><div class="option-icon">▲</div><h4>Vercel</h4><p>Best for Next.js, great DX, free hobby tier</p><span class="tag">free tier</span></div>
-        <div class="option-card"><div class="option-icon">🔥</div><h4>Firebase Hosting</h4><p>Google CDN, good if already using Firebase</p><span class="tag">free tier</span></div>
-        <div class="option-card"><div class="option-icon">◈</div><h4>Netlify</h4><p>Simple deploys, generous free tier</p><span class="tag">free tier</span></div>
-        <div class="option-card"><div class="option-icon">G</div><h4>Cloud Run</h4><p>Backend — scales to zero, pay per request</p></div>
-        <div class="option-card"><div class="option-icon">R</div><h4>Render</h4><p>Backend — simple setup, free tier (sleeps on inactivity)</p><span class="tag">free tier</span></div>
-        <div class="option-card"><div class="option-icon">🪰</div><h4>Fly.io</h4><p>Backend — global, 3 shared VMs free, no cold starts</p><span class="tag">free tier</span></div>
+        <div class="option-card"><div class="option-icon">☁</div><h4>Cloudflare Pages</h4><p>Website hosting — blazing fast, global, unlimited bandwidth</p><span class="tag">free tier</span></div>
+        <div class="option-card"><div class="option-icon">▲</div><h4>Vercel</h4><p>Website hosting — best experience for Next.js apps, easy git push deploys</p><span class="tag">free tier</span></div>
+        <div class="option-card"><div class="option-icon">🔥</div><h4>Firebase Hosting</h4><p>Website hosting — Google's CDN, good if you're already using Firebase</p><span class="tag">free tier</span></div>
+        <div class="option-card"><div class="option-icon">◈</div><h4>Netlify</h4><p>Website hosting — simple drag-and-drop or git deploys, generous free tier</p><span class="tag">free tier</span></div>
+        <div class="option-card"><div class="option-icon">G</div><h4>Google Cloud Run</h4><p>Server hosting — pay only when your server is actually handling requests</p></div>
+        <div class="option-card"><div class="option-icon">R</div><h4>Render</h4><p>Server hosting — simple setup, free tier (server sleeps after 15 min of no traffic)</p><span class="tag">free tier</span></div>
+        <div class="option-card"><div class="option-icon">🪰</div><h4>Fly.io</h4><p>Server hosting — runs in data centers around the world, generous free tier</p><span class="tag">free tier</span></div>
       </div>
     </div>
   </div>
@@ -543,8 +542,8 @@
 <section id="structure">
   <div class="container">
     <span class="section-label">What you get</span>
-    <h2>Everything wired, nothing missing</h2>
-    <p class="section-sub">The generated project is a production-ready monorepo — not a starter template you have to gut and rebuild.</p>
+    <h2>A complete project, ready to go</h2>
+    <p class="section-sub">Not a starter template you need to piece together — a fully working project with every file wired up for your exact choices.</p>
     <div class="structure-grid">
       <div class="file-tree">
 <span class="dir">my-app/</span>
@@ -568,19 +567,19 @@
       <div class="scripts-list">
         <div class="script-item">
           <code>npm run dev</code>
-          <p>Starts web (port 3000) + API (port 8080) concurrently with colour-coded output</p>
+          <p>Starts your website and server together locally — open your browser and start building</p>
         </div>
         <div class="script-item">
           <code>npm run deploy</code>
-          <p>Pre-flight checks for missing env vars and CLI tools, then builds and deploys to all configured platforms</p>
+          <p>Checks that everything is configured, then pushes your app live to the internet</p>
         </div>
         <div class="script-item">
           <code>.env.example</code>
-          <p>Every required environment variable listed with description and example value — based on your exact selections</p>
+          <p>A list of every secret/key your app needs, with descriptions and example values — just copy, rename to <code>.env</code>, and fill in your values</p>
         </div>
         <div class="script-item">
           <code>TROUBLESHOOTING.md</code>
-          <p>Common errors and fixes for your specific stack — only relevant sections included</p>
+          <p>Common errors and how to fix them — tailored to your exact stack, no irrelevant noise</p>
         </div>
       </div>
     </div>
@@ -592,17 +591,17 @@
 <!-- ── AI Helper ───────────────────────────────────────────────────── -->
 <section id="ai-helper">
   <div class="container">
-    <span class="section-label">Stuck?</span>
-    <h2>Ask an AI with full context</h2>
-    <p class="section-sub">Describe your error or question below. We'll open Claude, ChatGPT, or Gemini pre-loaded with everything they need to know about create-vibe-project.</p>
+    <span class="section-label">Need help?</span>
+    <h2>Ask an AI — it already knows the tool</h2>
+    <p class="section-sub">Describe what's going wrong or what you're trying to do. We'll open Claude, ChatGPT, or Gemini with all the context it needs to give you a useful answer.</p>
 
     <div class="ai-card">
-      <h3>What's the issue?</h3>
-      <p>Paste your error message, describe what's not working, or ask anything about the tool.</p>
+      <h3>What's happening?</h3>
+      <p>Paste an error message, describe what's not working, or just ask a question in plain English.</p>
       <textarea
         id="ai-question"
         class="ai-textarea"
-        placeholder="e.g. Getting ENOENT error when running npx create-vibe-project, or asking about how to set up Cloud Run deploy..."
+        placeholder="e.g. I ran the command but nothing happened, or I don't know what to put in my .env file..."
       ></textarea>
       <div class="ai-label">Open with</div>
       <div class="ai-buttons">
