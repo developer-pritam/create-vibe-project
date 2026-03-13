@@ -1,10 +1,10 @@
-# CLAUDE.md — create-vibe-stack
+# CLAUDE.md — create-vibe-project
 
 This file gives AI assistants full context to work on this codebase.
 
 ## What this project is
 
-`create-vibe-stack` is a CLI tool (`npx create-vibe-stack`) that scaffolds full-stack projects. It asks 13 interactive questions and generates a project folder with `npm run dev` and `npm run deploy` pre-configured.
+`create-vibe-project` is a CLI tool (`npx create-vibe-project`) that scaffolds full-stack projects. It asks 13 interactive questions and generates a project folder with `npm run dev` and `npm run deploy` pre-configured.
 
 ## Repository structure
 

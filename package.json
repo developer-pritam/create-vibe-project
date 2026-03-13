@@ -1,10 +1,10 @@
 {
-  "name": "create-vibe-stack",
+  "name": "create-vibe-project",
   "version": "0.1.0",
   "description": "Scaffold and deploy full-stack projects with one command",
   "type": "module",
   "bin": {
-    "create-vibe-stack": "./dist/index.js"
+    "create-vibe-project": "./dist/index.js"
   },
   "files": [
     "dist",

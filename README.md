@@ -1,9 +1,9 @@
-# create-vibe-stack
+# create-vibe-project
 
 Scaffold a production-ready full-stack project in under a minute. Answer a few questions — get a working project with `npm run dev` and `npm run deploy` already configured.
 
 ```bash
-npx create-vibe-stack
+npx create-vibe-project
 ```
 
 ---
@@ -24,7 +24,7 @@ Asks you 13 questions about what your project needs, then generates:
 ## Quick start
 
 ```bash
-npx create-vibe-stack
+npx create-vibe-project
 cd my-app
 npm install
 cp .env.example .env   # fill in your values
@@ -238,7 +238,7 @@ fly launch   # from apps/api directory
 
 ## Environment variables
 
-After running `create-vibe-stack`, copy `.env.example` to `.env` and fill in the values.
+After running `create-vibe-project`, copy `.env.example` to `.env` and fill in the values.
 
 Each variable has a description and example value in `.env.example`. The variables present depend on which services you selected.
 
@@ -280,8 +280,8 @@ The `npm run deploy` script reads this file to know where to deploy.
 ## Contributing
 
 ```bash
-git clone https://github.com/your-org/create-vibe-stack
-cd create-vibe-stack
+git clone https://github.com/your-org/create-vibe-project
+cd create-vibe-project
 npm install
 npm run dev        # watch mode
 node dist/index.js # test the CLI
